@@ -1,0 +1,90 @@
+#######################################
+# Syntax Coloring Map "a3gs R4.0"
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+A3GS	KEYWORD1
+A3GS_st_e	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+getStatus	KEYWORD2
+begin	KEYWORD2
+end	KEYWORD2
+restart	KEYWORD2
+start	KEYWORD2
+shutdown	KEYWORD2
+getIMEI	KEYWORD2
+sendSMS	KEYWORD2
+availableSMS	KEYWORD2
+readSMS	KEYWORD2
+onSMSReceived	KEYWORD2
+connectTCP	KEYWORD2
+disconnectTCP	KEYWORD2
+read	KEYWORD2
+write	KEYWORD2
+httpGET	KEYWORD2
+httpPOST	KEYWORD2
+tweet	KEYWORD2
+getLocation	KEYWORD2
+getServices	KEYWORD2
+getRSSI	KEYWORD2
+getTime	KEYWORD2
+getTime2	KEYWORD2
+getDefaultProfile	KEYWORD2
+setDefaultProfile	KEYWORD2
+setBaudrate	KEYWORD2
+setLED	KEYWORD2
+setAirplaneMode	KEYWORD2
+# put	KEYWORD2
+# get	KEYWORD2
+# updateProfile	KEYWORD2
+# encryptProfile	KEYWORD2
+getStatusTCP	KEYWORD2
+getLocation2	KEYWORD2
+enterAT	KEYWORD2
+writeBegin	KEYWORD2
+getResult	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+ctrlz	LITERAL1
+cr	LITERAL1
+lf	LITERAL1
+eof	LITERAL1
+a3gsBAUD	LITERAL1
+a3gsDATE_SIZE	LITERAL1
+a3gsTIME_SIZE	LITERAL1
+a3gsCS_ASCII	LITERAL1
+a3gsCS_UNICODE	LITERAL1
+a3gsIMEI_SIZE	LITERAL1
+a3gsDEFAULT_PORT	LITERAL1
+a3gsMAX_SMS_LENGTH	LITERAL1
+a3gsMAX_URL_LENGTH	LITERAL1
+a3gsMAX_HOST_LENGTH	LITERAL1
+a3gsMAX_DATA_LENGTH	LITERAL1
+a3gsMAX_RESULT_LENGTH	LITERAL1
+a3gsMAX_HEADER_LENGTH	LITERAL1
+a3gsMAX_PASSWORD_LENGTH	LITERAL1
+a3gsMAX_BODY_LENGTH	LITERAL1
+a3gsMAX_SMS_SLOT	LITERAL1
+a3gsMAX_TUNNEL_DATA_LENGTH	LITERAL1
+a3gsSRV_NO	LITERAL1
+a3gsSRV_PS	LITERAL1
+a3gsSRV_CS	LITERAL1
+a3gsSRV_BOTH	LITERAL1
+a3gsBAT_OK	LITERAL1
+a3gsBAT_CHG	LITERAL1
+a3gsMPBASED	LITERAL1
+a3gsMPASSISTED	LITERAL1
+a3gsMPSTANDALONE	LITERAL1
+a3gsDEFAULT_PORT	LITERAL1
+a3gsSUCCESS	LITERAL1
+a3gsERROR	LITERAL1
+a3gs	LITERAL1
+a3gSerial	LITERAL1
+## END
