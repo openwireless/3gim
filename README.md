@@ -9,4 +9,7 @@
   * Arduino UNO/Pro等、AVRマイコンで3GIMをソフトウェアシリアルを介して利用するライブラリ
 * a3gim2
   * Arduino Mega/101/Zero/M0/Mo Pro/Due等、ハードウェアシリアルを介して3GIMを使用するライブラリ
-  
+
+## 補足
+3GIM(V2.2)等に関する技術情報は、下記のWikiサイトをご覧ください。
+[3gim Wiki](https://3gim.wiki) 
