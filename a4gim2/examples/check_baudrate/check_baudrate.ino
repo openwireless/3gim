@@ -1,6 +1,6 @@
-// 3GIM(V2) sample sketchfor Mega/Leonardo.. -- check current baudrate
+// 4GIM(V1) sample sketchfor Mega/Leonardo.. -- check current baudrate
 
-#include "a3gim2.h"
+#include "a4gim2.h"
 
 const int powerPin = 7;     // 3gim power pin(If not using power control, 0 is set.)
 long baudrates[7] = { 9600, 19200, 38400, 57600, 115200 };
@@ -13,10 +13,10 @@ void setup()
 
   Serial.println("Initializing.. ");
   for (int i = 0; i < 7; i++) {
-    if (a3gs.start(powerPin) == 0) {
+    if (a4gs.start(powerPin) == 0) {
       Serial.print("Try baudrate: ");
       Serial.println(baudrates[i]);
-      if (a3gs.begin(0, baudrates[i]) == 0) {
+      if (a4gs.begin(0, baudrates[i]) == 0) {
         Serial.println("Recognize succeeded.");
         Serial.print("Current baudrate is ");
         Serial.print(baudrates[i]);
@@ -24,8 +24,8 @@ void setup()
         return;
       }
       Serial.println("Failed.");
-      a3gs.end();
-      a3gs.shutdown();
+      a4gs.end();
+      a4gs.shutdown();
     }
   }
   Serial.println("Can't recognize baudrate.");

@@ -52,7 +52,7 @@
 	// Misc.
 #define	MAX_RETRY					3			// Max retry count for begin()
 
-// Define an a4gm(Arduino 3G Shield) Object Here.
+// Define an a4gs(Arduino 3G Shield) Object Here.
 A4GS	a4gs;
 
 // Global variables
@@ -74,12 +74,12 @@ static char gWorkBuffer[256];			// Buffer for working(Mega..)
 //***************************
 int A4GS::begin(char* pin)
 {
-	char	version[a4gmMAX_VERSION_LENGTH+1];
+	char	version[a4gsMAX_VERSION_LENGTH+1];
 //--
-	DEBUG_PRINT(">begin()", a4gmBAUDRATE);
+	DEBUG_PRINT(">begin()", a4gsBAUDRATE);
 
 	// Begin SoftwareSerial
-	a4gmSerial.begin(a4gmBAUDRATE);
+	a4gsSerial.begin(a4gsBAUDRATE);
 
 	// Initilalize global variables
 	_status = IDLE;
@@ -99,7 +99,7 @@ int A4GS::begin(char* pin)
 		return 2;	// NG -- IEM Version is old
 	}
 
-	return a4gmSUCCESS;  // OK
+	return a4gsSUCCESS;  // OK
 }
 
 //***************************
@@ -119,13 +119,13 @@ int A4GS::begin(char* pin)
 //***************************
 int A4GS::begin(char* pin, uint32_t baudrate)
 {
-	char	version[a4gmMAX_VERSION_LENGTH+1];
+	char	version[a4gsMAX_VERSION_LENGTH+1];
 //--
 	DEBUG_PRINT(">begin()", baudrate);
 
 	// Begin SoftwareSerial
-	a4gmSerial.end();
-	a4gmSerial.begin(baudrate);
+	a4gsSerial.end();
+	a4gsSerial.begin(baudrate);
 
 	// Initilalize global variables
 	_status = IDLE;
@@ -145,7 +145,7 @@ int A4GS::begin(char* pin, uint32_t baudrate)
 		return 2;	// NG -- IEM Version is old
 	}
 
-	return a4gmSUCCESS;  // OK
+	return a4gsSUCCESS;  // OK
 }
 
 //***************************
@@ -158,16 +158,16 @@ int A4GS::begin(char* pin, uint32_t baudrate)
 //	@param
 //		none
 //	@note
-//		re-enable serial communication, call a4gm.begin()
+//		re-enable serial communication, call a4gs.begin()
 //		Change at R3.1 for 3GIM
 //***************************
 int A4GS::end(void)
 {
 	// End SoftwareSerial
-	a4gmSerial.flush();	//--@R3.0 add
-	a4gmSerial.end();
+	a4gsSerial.flush();	//--@R3.0 add
+	a4gsSerial.end();
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -187,7 +187,7 @@ int A4GS::restart(int pin)
 {
 	sendCommand("$YE");		// Send "Reset IEM" Command
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -217,7 +217,7 @@ int A4GS::start(int pin)
 		digitalWrite(_powerPin, LOW);
 	}
 
-	a4gmSerial.begin(9600);
+	a4gsSerial.begin(9600);
 
 	DEBUG_PRINT(">start()", "Turn on and wait for a moment..");
 
@@ -225,7 +225,7 @@ int A4GS::start(int pin)
 
 	DEBUG_PRINT(">start()", "IEM is available now.");
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -250,7 +250,7 @@ int A4GS::shutdown(void)
 	if (_powerPin > 0)
 		digitalWrite(_powerPin, HIGH);
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -261,7 +261,7 @@ int A4GS::shutdown(void)
 //	@return value
 //		0 .. Succeeded, otherwise .. Failed
 //	@param
-//		status .. [OUT] SRV* (see a4gm.h)
+//		status .. [OUT] SRV* (see a4gs.h)
 //	@note
 //		
 //***************************
@@ -280,22 +280,22 @@ int A4GS::getServices(int& status)
 	// parse response
 	switch (responses[7]) {
 		case '0' :		// NO_SRV
-			status = a4gmSRV_NO;
+			status = a4gsSRV_NO;
 			break;
 		case '1' :		// PS_ONLY
-			status = a4gmSRV_PS;
+			status = a4gsSRV_PS;
 			break;
 		case '2' :		// CS_ONLY
-			status = a4gmSRV_CS;
+			status = a4gsSRV_CS;
 			break;
 		case '3' :		// BOTH
-			status = a4gmSRV_BOTH;
+			status = a4gsSRV_BOTH;
 			break;
 		default : 		// bug
 			return 1;		// NG -- Can't get service
 	}
 
-	return a4gmSUCCESS;		// OK
+	return a4gsSUCCESS;		// OK
 }
 
 //***************************
@@ -307,13 +307,13 @@ int A4GS::getServices(int& status)
 //		0 .. Succeeded
 //		otherwise .. Failed
 //	@param
-//		imei : [OUT] IMEI (a4gmIMEI_SIZE bytes space requred)
+//		imei : [OUT] IMEI (a4gsIMEI_SIZE bytes space requred)
 //	@note
 //		
 //***************************
 int A4GS::getIMEI(char* imei)
 {
-	char responses[a4gmIMEI_SIZE+10];  // Format "$YI=OK 99..99" or "$YI=NG errno"
+	char responses[a4gsIMEI_SIZE+10];  // Format "$YI=OK 99..99" or "$YI=NG errno"
 	int  length = sizeof(responses);
 //--
 	sendCommand("$YI");		// Send "Get IMEI" command
@@ -327,10 +327,10 @@ int A4GS::getIMEI(char* imei)
 	if (strncmp(responses, "$YI=OK", 6))
 		return 1;	// NG -- Can't get IMEI
 
-	strncpy(imei, responses+7, a4gmIMEI_SIZE);
-	imei[a4gmIMEI_SIZE-1] = '\0';
+	strncpy(imei, responses+7, a4gsIMEI_SIZE);
+	imei[a4gsIMEI_SIZE-1] = '\0';
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -379,7 +379,7 @@ int A4GS::setBaudrate(uint32_t baudrate)
 	if (strncmp(responses, "$YB=OK", 6))
 		return 1;	// NG -- Can't set baudrate
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -414,7 +414,7 @@ int A4GS::setLED(boolean sw)
 	if (strncmp(responses, "$YL=OK", 6))
 		return 1;	// NG -- Can't set led
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -449,7 +449,7 @@ int A4GS::setAirplaneMode(boolean sw)
 	if (strncmp(responses, "$YP=OK", 6))
 		return 1;	// NG -- Can't set airplane mode
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -480,12 +480,12 @@ int A4GS::httpGET(const char* server, uint16_t port, const char* path, char* res
 //--
 	// Send command line little by little
 	if (ssled) {
-		if (strlen(server) + strlen(path) + 8 > a4gmMAX_URL_LENGTH)
+		if (strlen(server) + strlen(path) + 8 > a4gsMAX_URL_LENGTH)
 			return 1;  // NG -- Too long url
 
 		sendData("$WG https://");
 		sendData(server);
-		if (port != a4gmDEFAULT_PORT) {
+		if (port != a4gsDEFAULT_PORT) {
 			char ports[6];
 			sendData(":");
 			sprintf(ports, "%u", port);
@@ -493,12 +493,12 @@ int A4GS::httpGET(const char* server, uint16_t port, const char* path, char* res
 		}
 	}
 	else {
-		if (strlen(server) + strlen(path) + 7 > a4gmMAX_URL_LENGTH)
+		if (strlen(server) + strlen(path) + 7 > a4gsMAX_URL_LENGTH)
 			return 1;  // NG -- Too long url
 
 		sendData("$WG http://");
 		sendData(server);
-		if (port != a4gmDEFAULT_PORT) {
+		if (port != a4gsDEFAULT_PORT) {
 			char ports[6];
 			sendData(":");
 			sprintf(ports, "%u", port);
@@ -518,8 +518,8 @@ int A4GS::httpGET(const char* server, uint16_t port, const char* path, char* res
 	sendCommand("");	// Go HTTP/GET request
 
 	// Discard gerbage in input buffer --@add R4.3
-	while (a4gmSerial.available() > 0)
-		(void)a4gmSerial.read();
+	while (a4gsSerial.available() > 0)
+		(void)a4gsSerial.read();
 	
 	DEBUG_PRINT(">httpGET()", "REQ");
 
@@ -539,12 +539,12 @@ int A4GS::httpGET(const char* server, uint16_t port, const char* path, char* res
 	// Copy response body into "result" and set "resultlength"
 	uint32_t	startTime = millis();
 	for (int n = 0; n < nbytes; n++) {
-		while (a4gmSerial.available() <= 0) {
+		while (a4gsSerial.available() <= 0) {
 			// Wait until valid response
 			if (millis() - startTime >= TIMEOUT_NETWORK)
 				return 2;	// NG -- Timeout
 		}
-		c = a4gmSerial.read();
+		c = a4gsSerial.read();
 		if (n < resultlength - 1)
 			result[n] = c;
 	}
@@ -554,7 +554,7 @@ int A4GS::httpGET(const char* server, uint16_t port, const char* path, char* res
 	else
 		result[nbytes] = '\0';
 
-	return a4gmSUCCESS;		// OK
+	return a4gsSUCCESS;		// OK
 }
 
 //***************************
@@ -584,19 +584,19 @@ int A4GS::httpPOST(const char* server, uint16_t port, const char* path, const ch
 	int	nbytes;
 	int	c;		//@R2.0 Change
 //--
-	if (strlen(body) > a4gmMAX_BODY_LENGTH)
+	if (strlen(body) > a4gsMAX_BODY_LENGTH)
 		return 1;	// NG -- too long body
-	if (header != NULL && strlen(header) > a4gmMAX_HEADER_LENGTH)
+	if (header != NULL && strlen(header) > a4gsMAX_HEADER_LENGTH)
 		return 1;	// NG -- too long header
 
 	// Send command line little by little
 	if (ssled) {
-		if (strlen(server) + strlen(path) + 8 > a4gmMAX_URL_LENGTH)
+		if (strlen(server) + strlen(path) + 8 > a4gsMAX_URL_LENGTH)
 			return 1;  // NG -- Too long url
 
 		sendData("$WP https://");
 		sendData(server);
-		if (port != a4gmDEFAULT_PORT) {
+		if (port != a4gsDEFAULT_PORT) {
 			char ports[6];
 			sendData(":");
 			sprintf(ports, "%u", port);
@@ -604,12 +604,12 @@ int A4GS::httpPOST(const char* server, uint16_t port, const char* path, const ch
 		}
 	}
 	else {
-		if (strlen(server) + strlen(path) + 7 > a4gmMAX_URL_LENGTH)
+		if (strlen(server) + strlen(path) + 7 > a4gsMAX_URL_LENGTH)
 			return 1;  // NG -- Too long url
 
 		sendData("$WP http://");
 		sendData(server);
-		if (port != a4gmDEFAULT_PORT) {
+		if (port != a4gsDEFAULT_PORT) {
 			char ports[6];
 			sendData(":");
 			sprintf(ports, "%u", port);
@@ -633,8 +633,8 @@ int A4GS::httpPOST(const char* server, uint16_t port, const char* path, const ch
 	sendCommand("\"");	// Go command
 
 	// Discard gerbage in input buffer --@add R4.3
-	while (a4gmSerial.available() > 0)
-		(void)a4gmSerial.read();
+	while (a4gsSerial.available() > 0)
+		(void)a4gsSerial.read();
 	
 	DEBUG_PRINT(">httpPOST()", "REQ");
 
@@ -654,12 +654,12 @@ int A4GS::httpPOST(const char* server, uint16_t port, const char* path, const ch
 	// Copy response body into "result" and set "resultlength"
 	uint32_t	startTime = millis();
 	for (int n = 0; n < nbytes; n++) {
-		while (a4gmSerial.available() <= 0) {
+		while (a4gsSerial.available() <= 0) {
 			// Wait until valid response
 			if (millis() - startTime >= TIMEOUT_NETWORK)
 				return 2;	// NG -- Timeout
 		}
-		c = a4gmSerial.read();
+		c = a4gsSerial.read();
 		if (n < *resultlength - 1)
 			result[n] = c;
 	}
@@ -671,7 +671,7 @@ int A4GS::httpPOST(const char* server, uint16_t port, const char* path, const ch
 		*resultlength = nbytes;
 	}
 
-	return a4gmSUCCESS;		// OK
+	return a4gsSUCCESS;		// OK
 }
 
 //***************************
@@ -699,7 +699,7 @@ int A4GS::tweet(const char* token, const char* msg)
 {
 	int	resultlength = sizeof(gWorkBuffer);
 //--
-	if (strlen(msg) > a4gmMAX_TWEET_LENGTH)
+	if (strlen(msg) > a4gsMAX_TWEET_LENGTH)
 		return 8;  // Too long message. (@@ check by number of characters, not bytes)
 
 	sprintf(gWorkBuffer, "token=%s&status=%s", token, msg);
@@ -744,7 +744,7 @@ int A4GS::getTime(char date[], char time[])
 	strncpy(time, responses + 18, 8);
 	time[8] = '\0';
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -763,8 +763,8 @@ int A4GS::getTime(char date[], char time[])
 int A4GS::getTime2(uint32_t& seconds)
 {
 	static  const uint8_t monthDays[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-	char date[a4gmDATE_SIZE];
-	char time[a4gmTIME_SIZE];
+	char date[a4gsDATE_SIZE];
+	char time[a4gsTIME_SIZE];
 	uint8_t year, month, day, hour, minute, second;
 	uint32_t t;   // total seconds from 1970/01/01 00:00:00
 //--
@@ -800,7 +800,7 @@ int A4GS::getTime2(uint32_t& seconds)
 
 	seconds = t;
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -835,7 +835,7 @@ int A4GS::getRSSI(int& rssi)
 	// Parse response
 	rssi = atoi(responses + 7);
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -869,7 +869,7 @@ int A4GS::getVersion(char *version)
 
 	strcpy(version, responses + 7);
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -909,7 +909,7 @@ int A4GS::setDefaultProfile(const char *apn, const char *user, const char *passw
 	if (! strncmp(responses, "$PS=NG", 6))
 		return 3;	// NG --  Can't set prfoile number
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -950,7 +950,7 @@ int A4GS::getDefaultProfile(char *apn, char *user, char *password)
 		*password++ = *p;
 	*password = '\0';
 	
-	return a4gmSUCCESS;  // Succeeded
+	return a4gsSUCCESS;  // Succeeded
 }
 
 //***************************
@@ -973,7 +973,7 @@ int A4GS::connectTCP(const char* server, int port)
 	int	length = sizeof(responses);
 //--
 	// Check parameter size
-	if (strlen(server) > a4gmMAX_HOST_LENGTH)
+	if (strlen(server) > a4gsMAX_HOST_LENGTH)
 		return 1;	// NG -- too long host name
 	// Make command and send it
 	sprintf(gWorkBuffer, "$TC %s %d", server, port);
@@ -991,7 +991,7 @@ int A4GS::connectTCP(const char* server, int port)
 	// Change status
 	_status = TCPCONNECTEDCLIENT;
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -1027,7 +1027,7 @@ int A4GS::disconnectTCP()
 	// Change status
 	_status = READY;
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -1080,7 +1080,7 @@ int A4GS::getStatusTCP(int *status, int *tcpnotif, long *remainedBytes, long *re
 		p++;	// skip space(s)
 	*receivedBytes = atol(p);
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -1121,7 +1121,7 @@ int A4GS::setTCPParams(int timeout1, int timeout2)
 	if (strncmp(responses, "$TX=OK", 6))
 		return 1;			// NG(Bad params, etc.)
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -1147,18 +1147,18 @@ int A4GS::write(uint8_t c)
 	if (c < 0x20) {
 		char	escaped[6];
 		sprintf(escaped, "$x%02x", c);
-		a4gmSerial.print(escaped); 
+		a4gsSerial.print(escaped); 
 	}
 	// @R2.3 add -begin-
 	else if (c == '"') {
-		a4gmSerial.print("$\"");
+		a4gsSerial.print("$\"");
 	}
 	else if (c == '$') {
-		a4gmSerial.print("$$");
+		a4gsSerial.print("$$");
 	}
 	// @R2.3 add -end-
 	else {
-		a4gmSerial.print((char)c); 
+		a4gsSerial.print((char)c); 
 	}
 	sendCommand("\"");
 
@@ -1194,7 +1194,7 @@ int A4GS::write(const char* str)
 	char	responses[30];		// FORMAT: "$TW=OK nbytes" or "$TW=NG errno [info]\n"
 	int	length = sizeof(responses);
 //--
-	if (strlen(str) > a4gmMAX_DATA_LENGTH)
+	if (strlen(str) > a4gsMAX_DATA_LENGTH)
 		return -1;	// NG -- too large data
 
 	// Make command and send it
@@ -1235,7 +1235,7 @@ int A4GS::write(const uint8_t* buffer, size_t sz)
 	char	responses[30];		// FORMAT: "$TW=OK nbytes\n" or "$TW=NG errno [info]\n"
 	int	length = sizeof(responses);
 //--
-	if (sz > (size_t)a4gmMAX_DATA_LENGTH)
+	if (sz > (size_t)a4gsMAX_DATA_LENGTH)
 		return -1;	// NG -- too large data
 
 	// Make command and send it
@@ -1244,18 +1244,18 @@ int A4GS::write(const uint8_t* buffer, size_t sz)
 		if (*buffer < 0x20) {
 			char	escaped[6];
 			sprintf(escaped, "$x%02x", *buffer);
-			a4gmSerial.print(escaped); 
+			a4gsSerial.print(escaped); 
 		}
 		// @R2.3 add -begin-
 		else if (*buffer == '"') {
-			a4gmSerial.print("$\"");
+			a4gsSerial.print("$\"");
 		}
 		else if (*buffer == '$') {
-			a4gmSerial.print("$$");
+			a4gsSerial.print("$$");
 		}
 		// @R2.3 add -end-
 		else {
-			a4gmSerial.print((char)*buffer); 
+			a4gsSerial.print((char)*buffer); 
 		}
 		buffer++;
 	}
@@ -1280,7 +1280,7 @@ int A4GS::write(const uint8_t* buffer, size_t sz)
 //
 //	@description
 //		Begin to write byte stream into current TCP/IP connection
-//		User will write binary/text data a4gmSerial directly
+//		User will write binary/text data a4gsSerial directly
 //	@return value
 //		-1 .. NG (Error)
 //		0 < .. OK (= wrote bytes)
@@ -1293,7 +1293,7 @@ int A4GS::writeBegin(size_t sz)
 {
 	int	length = sizeof(gWorkBuffer);
 //--
-	if (sz > a4gmMAX_TUNNEL_DATA_LENGTH)
+	if (sz > a4gsMAX_TUNNEL_DATA_LENGTH)
 		return -1;	// NG -- Bad parameter
 
 	// Make command and send it
@@ -1305,7 +1305,7 @@ int A4GS::writeBegin(size_t sz)
 
 	DEBUG_PRINT(">writeBegin()", gWorkBuffer);
 
-	return a4gmSUCCESS;		// OK
+	return a4gsSUCCESS;		// OK
 }
 
 //***************************
@@ -1330,7 +1330,7 @@ int A4GS::read(char* result, int resultlength)
 	int	length = sizeof(gWorkBuffer);
 	int	c;		//@R2.0 Change
 //--
-	if (resultlength > a4gmMAX_DATA_LENGTH)
+	if (resultlength > a4gsMAX_DATA_LENGTH)
 		return -1;	// NG -- Bad parameter
 
 	// Make command and send it
@@ -1359,7 +1359,7 @@ int A4GS::read(char* result, int resultlength)
 
 	// Copy response body into "result" and set "resultlength"
 	for (int n = 0; n < nbytes; ) {
-		while ((c = a4gmSerial.read()) < 0)
+		while ((c = a4gsSerial.read()) < 0)
 			;	// read until valid response
 		if (n < resultlength - 1)
 			result[n] = c;
@@ -1398,7 +1398,7 @@ int A4GS::read(uint8_t* buffer, size_t sz)
 	int	length = sizeof(gWorkBuffer);
 	int	c;
 //--
-	if (sz > (size_t)a4gmMAX_DATA_LENGTH)
+	if (sz > (size_t)a4gsMAX_DATA_LENGTH)
 		return -1;	// NG -- Bad parameter
 
 	// Make command and send it
@@ -1428,7 +1428,7 @@ int A4GS::read(uint8_t* buffer, size_t sz)
 	// Copy response body into "result" and set "resultlength"
 	size_t n;
 	for (n = 0; n < nbytes; n++) {
-		while ((c = a4gmSerial.read()) < 0)
+		while ((c = a4gsSerial.read()) < 0)
 			;	// read until valid response
 		if (n < sz)
 			buffer[n] = (uint8_t)c;
@@ -1484,7 +1484,7 @@ int A4GS::read(void)
 	DEBUG_PRINT(">read() nbytes", nbytes);
 
 	if (nbytes == 1) {
-		while ((c = a4gmSerial.read()) < 0)
+		while ((c = a4gsSerial.read()) < 0)
 			;	// read valid response
 	}
 	else // if (nbytes == 0)
@@ -1506,7 +1506,7 @@ int A4GS::read(void)
 //	@param
 //		duration : The time that You can take advantage of [x100 mS]
 //	@note
-//		AT commands and responses are comminicated via a4gmSerial directly.
+//		AT commands and responses are comminicated via a4gsSerial directly.
 //		Add @R4.0
 //***************************
 int A4GS::enterAT(uint32_t duration)
@@ -1526,7 +1526,7 @@ int A4GS::enterAT(uint32_t duration)
 
 	DEBUG_PRINT(">AT PASS THROUGH", duration);
 
-	return a4gmSUCCESS;	// OK
+	return a4gsSUCCESS;	// OK
 }
 
 //***************************
@@ -1555,10 +1555,10 @@ int A4GS::getResult(char *buf, int *len, uint32_t timeout)
 			DEBUG_PRINT(">getResult()", "TIMEOUT");
 			return 1;		// NG -- Timeout
 		}
-		if (a4gmSerial.available() <= 0)
+		if (a4gsSerial.available() <= 0)
 			continue;
 			DEBUGP(".");
-		int c = a4gmSerial.read();		//@R2.0 Change
+		int c = a4gsSerial.read();		//@R2.0 Change
 		DEBUGP(((char)c));
 		if (c == 0x0a) {	// end of line
 			if (buf[0] == '$')
@@ -1586,7 +1586,7 @@ int A4GS::getResult(char *buf, int *len, uint32_t timeout)
 void A4GS::sendCommand(const char* cmd)
 {
 	// Send command to IEM with '\n'
-	a4gmSerial.println(cmd); 
+	a4gsSerial.println(cmd); 
 	DEBUG_PRINT("<sendCommand()", cmd);
 }
 
@@ -1594,11 +1594,11 @@ void A4GS::sendCommand(const char* cmd)
 void A4GS::sendData(const char* data)
 {
 	// Send data to IEM without '\n'
-	a4gmSerial.print(data); 
+	a4gsSerial.print(data); 
 	DEBUG_PRINT("<sendData()", data);
 }
 
-// discardUntl() -- discard characters from a4gmSerial until match specified character
+// discardUntl() -- discard characters from a4gsSerial until match specified character
 void A4GS::discardUntil(const char match)
 {
 	int	c;		//@R2.0 Change
@@ -1611,7 +1611,7 @@ void A4GS::discardUntil(const char match)
 			break;		// Timeout !
 		}
 
-		if ((c = a4gmSerial.read()) < 0)
+		if ((c = a4gsSerial.read()) < 0)
 			continue;	// discard until valid response -- @R2.1 Change
 
 		if (c == match)

@@ -1,6 +1,6 @@
-// 3GIM(V2) sample sketch for Mega/Leonardo/Zero.. -- setLED
+// 4GIM(V1) sample sketch for Mega/Leonardo/Zero.. -- setLED
 
-#include <a3gim2.h>
+#include <a4gim2.h>
 
 #define  INTERVAL  1000     // Blink interval
 #define baudrate 	9600UL
@@ -15,15 +15,15 @@ void setup()
   boolean done = false;
   while (! done) {
     Serial.print("Initializing.. ");
-    if (a3gs.start(powerPin) == 0 && a3gs.begin(0, baudrate) == 0) {
+    if (a4gs.start(powerPin) == 0 && a4gs.begin(0, baudrate) == 0) {
       Serial.println("Succeeded.");
 	  done = true;
     }
     else {
       Serial.println("Failed.");
       Serial.println("Shutdown..");
-      a3gs.end();
-      a3gs.shutdown();
+      a4gs.end();
+      a4gs.shutdown();
       delay(30000);
     }    
   }
@@ -33,9 +33,9 @@ void setup()
 
 void loop()
 {
-  a3gs.setLED(true);
+  a4gs.setLED(true);
   delay(INTERVAL);
-  a3gs.setLED(false);
+  a4gs.setLED(false);
   delay(INTERVAL);
 }
 

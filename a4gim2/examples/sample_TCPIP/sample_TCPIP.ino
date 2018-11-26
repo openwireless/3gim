@@ -1,7 +1,7 @@
-// 3GIM(V2) sample sketch for Mega/Leonardo/Zero.. -- connectTCP/disconnectTCP/read/write
+// 4GIM(V1) sample sketch for Mega/Leonardo/Zero.. -- connectTCP/disconnectTCP/read/write
 //   A title is extracted from a homepage. 
 
-#include <a3gim2.h>
+#include <a4gim2.h>
 
 #define baudrate 	        9600UL
 #define MAX_RETRY  3
@@ -22,11 +22,11 @@ void setup()
 
  _redo:
   Serial.print("Initializing.. ");
-  if (a3gs.start(powerPin) == 0 && a3gs.begin(0, baudrate) == 0) {
+  if (a4gs.start(powerPin) == 0 && a4gs.begin(0, baudrate) == 0) {
     Serial.println("Succeeded.");
     // Connect to server
     int nCount = 0;
-    while (nCount++ < MAX_RETRY && a3gs.connectTCP(server, port) != 0) {
+    while (nCount++ < MAX_RETRY && a4gs.connectTCP(server, port) != 0) {
       Serial.println("connectTCP() can't connect, retry..");
       delay(100);
     }
@@ -35,16 +35,16 @@ void setup()
       goto _end;
     }
     // Send GET request
-    a3gs.write("GET ");
-    a3gs.write(path);
-    a3gs.write(" HTTP/1.0$r$n");
-    a3gs.write("HOST:");
-    a3gs.write(server);
-    a3gs.write("$r$n$r$n");
+    a4gs.write("GET ");
+    a4gs.write(path);
+    a4gs.write(" HTTP/1.0$r$n");
+    a4gs.write("HOST:");
+    a4gs.write(server);
+    a4gs.write("$r$n$r$n");
     // Receive response
     do {
       int nbytes;
-      if ((nbytes = a3gs.read(res, sizeof(res)-1)) < 0) {
+      if ((nbytes = a4gs.read(res, sizeof(res)-1)) < 0) {
         Serial.println("read() failed");
         break;
       }
@@ -54,8 +54,8 @@ void setup()
     Serial.println("Failed.");
 
   Serial.println("Shutdown..");
-  a3gs.end();
-  a3gs.shutdown();
+  a4gs.end();
+  a4gs.shutdown();
 
   delay(15000);
   goto _redo;  // Repeat

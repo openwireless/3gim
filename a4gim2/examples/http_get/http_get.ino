@@ -1,6 +1,6 @@
-// 3GIM(V2) sample sketch for Mega/Leonardo.. -- httpGET
+// 4GIM(V1) sample sketch for Mega/Leonardo.. -- httpGET
 
-#include "a3gim2.h"
+#include "a4gim2.h"
 
 #define baudrate 	9600UL
 
@@ -19,11 +19,11 @@ void setup()
   Serial.println("Ready.");
 
   Serial.print("Initializing.. ");
-  if (a3gs.start(powerPin) == 0 && a3gs.begin(0, baudrate) == 0) {
+  if (a4gs.start(powerPin) == 0 && a4gs.begin(0, baudrate) == 0) {
     Serial.println("Succeeded.");
     Serial.print("httpGET() requesting.. ");
     len = sizeof(res);
-    if (a3gs.httpGET(server, port, path, res, len, true) == 0) {
+    if (a4gs.httpGET(server, port, path, res, len, true) == 0) {
       Serial.println("OK!");
       Serial.print("[");
       Serial.print(res);
@@ -38,8 +38,8 @@ void setup()
     Serial.println("Failed.");
 
   Serial.println("Shutdown..");
-  a3gs.end();
-  a3gs.shutdown();
+  a4gs.end();
+  a4gs.shutdown();
 }
 
 void loop()

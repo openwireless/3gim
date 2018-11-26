@@ -1,6 +1,6 @@
-// 3GIM(V2) sample sketch for Mega/Leonardo.. -- setDefaultProfile and getDefaultProfile
+// 4GIM(V1) sample sketch for Mega/Leonardo.. -- setDefaultProfile and getDefaultProfile
 
-#include "a3gim2.h"
+#include "a4gim2.h"
 
 #define baudrate 	9600UL
 const int powerPin = 7;     // 3gim power pin(If not using power control, 0 is set.)
@@ -16,11 +16,11 @@ void setup()
   Serial.println("Ready.");
 
   Serial.print("Initializing.. ");
-  if (a3gs.start(powerPin) == 0 && a3gs.begin(0, baudrate) == 0) {
+  if (a4gs.start(powerPin) == 0 && a4gs.begin(0, baudrate) == 0) {
     Serial.println("Succeeded.");
 	// Get current default profile
     char apn[20], user[20], password[20];
-    if (a3gs.getDefaultProfile(apn, user, password) == 0) {
+    if (a4gs.getDefaultProfile(apn, user, password) == 0) {
       Serial.print("Default Profile Number is ");
       Serial.print(apn);
       Serial.print(",");
@@ -30,7 +30,7 @@ void setup()
     }
 
 	// Set new default profile
-    if (a3gs.setDefaultProfile(newApn, newUser, newPassword) == 0) {
+    if (a4gs.setDefaultProfile(newApn, newUser, newPassword) == 0) {
       Serial.println("Succeed.");
     }
     else
@@ -41,8 +41,8 @@ void setup()
     Serial.println("Failed.");
 
   Serial.println("Shutdown..");
-  a3gs.end();
-  a3gs.shutdown();
+  a4gs.end();
+  a4gs.shutdown();
 }
 
 void loop()
