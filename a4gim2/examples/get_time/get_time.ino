@@ -14,7 +14,7 @@ void setup()
   Serial.print("Initializing.. ");
   if (a4gs.start(powerPin) == 0 && a4gs.begin(0, baudrate) == 0) {
     Serial.println("Succeeded.");
-    char date[a3gsDATE_SIZE], time[a3gsTIME_SIZE];
+    char date[a4gsDATE_SIZE], time[a4gsTIME_SIZE];
     if (a4gs.getTime(date, time) == 0) {
       Serial.print(date);
       Serial.print(" ");

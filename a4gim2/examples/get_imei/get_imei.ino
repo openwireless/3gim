@@ -14,7 +14,7 @@ void setup()
   Serial.print("Initializing.. ");
   if (a4gs.start(powerPin) == 0 && a4gs.begin(0, baudrate) == 0) {
     Serial.println("Succeeded.");
-    char imei[a3gsIMEI_SIZE];
+    char imei[a4gsIMEI_SIZE];
     if (a4gs.getIMEI(imei) == 0) {
       Serial.print("IMEI: ");
       Serial.println(imei);

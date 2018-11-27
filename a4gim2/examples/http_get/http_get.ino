@@ -7,9 +7,9 @@
 const int powerPin = 7;     // 3gim power pin(If not using power control, 0 is set.)
 const char *server = "www.arduino.cc";
 const char *path = "";
-const int port = a3gsDEFAULT_PORT;
+const int port = a4gsDEFAULT_PORT;
 
-char res[a3gsMAX_RESULT_LENGTH+1];
+char res[a4gsMAX_RESULT_LENGTH+1];
 int len;
 
 void setup()

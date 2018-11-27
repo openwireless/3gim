@@ -1,13 +1,13 @@
 // 4GIM(V1) sample sketch for Mega/Leonardo.. -- setBaudrate
 //
 //   You need to use "setBaudrate()" function CAREFULLY. 
-//   Because, 3G Shield becomes impossible to use when setting up 
+//   Because, 3G Shield/3GIM/4GIM becomes impossible to use when setting up 
 //   the value which is not suitable. 
 //   This function is used when gathering the communication speed of 
-//   Arruino and 3GIM Shield using HardwareSerial instead of SoftwareSerial.
+//   Arruino and 3GIM/4GIM Shield using HardwareSerial instead of SoftwareSerial.
 //   In order for you to use HardwareSerial, you need to correct "a4gs.h" 
-//   and "a3gim.cpp" appropriately.
-//   When using an "a3gim" library after performing this sketch, 
+//   and "a4gim.cpp" appropriately.
+//   When using an "a4gim2" library after performing this sketch, 
 //   begin() is called in the following arguments: 
 //       begin(0, NEW_BAUDRATE);
 
@@ -25,7 +25,6 @@ void setup()
 
   Serial.print("Initializing.. ");
   if (a4gs.start(powerPin) == 0 && a4gs.begin(0, CURRENT_BAUDRATE) == 0) {
-//@  if (a4gs.start() == 0 && a4gs.begin(0, NEW_BAUDRATE) == 0) {
     Serial.println("Succeeded.");
     if (a4gs.setBaudrate(NEW_BAUDRATE) == 0) {
       Serial.print("Baudrate was changed as ");

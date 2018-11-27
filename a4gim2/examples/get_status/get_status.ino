@@ -19,16 +19,16 @@ void setup()
     status = a4gs.getStatus();
     Serial.print("Status is ");
     switch (status) {
-      case A3GS::ERROR :
+      case A4GS::ERROR :
         Serial.println("ERROR");
         break;
-      case A3GS::IDLE :
+      case A4GS::IDLE :
         Serial.println("IDLE");
         break;
-      case A3GS::READY :
+      case A4GS::READY :
         Serial.println("READY");
         break;
-      case A3GS::TCPCONNECTEDCLIENT :
+      case A4GS::TCPCONNECTEDCLIENT :
         Serial.println("TCPCONNECTEDCLIENT");
         break;
       default :
