@@ -2,26 +2,25 @@
 
 #include "a4gim2.h"
 
-#define baudrate 	9600UL
-const int powerPin = 7;     // 3gim power pin(If not using power control, 0 is set.)
-  // New profile
-const char *newApn = "x.y";
-const char *newUser = "u";
-const char *newPassword = "p";
+const int powerPin = 7;     // 4gim power pin(If not using power control, 0 is set.)
+  // New profile -- for example, SORACOM SIM
+const char *newApn = "soracom.io";
+const char *newUser = "sora";
+const char *newPassword = "sora";
 
 void setup()
 {
-  Serial.begin(baudrate);
+  Serial.begin(9600);
   delay(3000);  // Wait for Start Serial Monitor
   Serial.println("Ready.");
 
   Serial.print("Initializing.. ");
-  if (a4gs.start(powerPin) == 0 && a4gs.begin(0, baudrate) == 0) {
+  if (a4gs.start(powerPin) == 0 && a4gs.begin() == 0) {
     Serial.println("Succeeded.");
 	// Get current default profile
     char apn[20], user[20], password[20];
     if (a4gs.getDefaultProfile(apn, user, password) == 0) {
-      Serial.print("Default Profile Number is ");
+      Serial.print("Default Profile is ");
       Serial.print(apn);
       Serial.print(",");
       Serial.print(user);

@@ -13,13 +13,13 @@
 
 #include "a4gim2.h"
 
-#define NEW_BAUDRATE  		38400
-#define CURRENT_BAUDRATE  9600
-const int powerPin = 7;     // 3gim power pin(If not using power control, 0 is set.)
+#define NEW_BAUDRATE  		9600
+#define CURRENT_BAUDRATE    115200
+const int powerPin = 7;     // 4gim power pin(If not using power control, 0 is set.)
 
 void setup()
 {
-  Serial.begin(CURRENT_BAUDRATE);
+  Serial.begin(9600);
   delay(3000);  // Wait for Start Serial Monitor
   Serial.println("Ready.");
 

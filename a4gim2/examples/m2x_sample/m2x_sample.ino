@@ -5,7 +5,6 @@
 
 #include "a4gim2.h"
 
-#define BAUDRATE   9600UL 
 #define TEMPPRA    0.594   // IoTABシールド ５V系マイコンボードの場合
 //#define TEMPPRA  0.392   //           ３．３V系マイコンボードの場合
 
@@ -23,7 +22,7 @@ void setup() {
  Serial.println(">Ready.");
 
   Serial.print("Initializing.. ");
-  if (a4gs.start(powerPin) == 0 && a4gs.begin(0,BAUDRATE) == 0)
+  if (a4gs.start(powerPin) == 0 && a4gs.begin() == 0)
     Serial.println("Succeeded.");
   else {
     Serial.println("Failed.");

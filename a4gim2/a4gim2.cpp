@@ -3,6 +3,7 @@
 //
 //	History:
 //		R1.0 2018/09/02  1st Release for 4GIM(Ver1.0)
+//		R1.1 2018/11/27  Correct spelling mistake and examples.
 //
 //	Author:
 //		Open wireless Alliance and Atushi Daikoku
@@ -15,14 +16,14 @@
 //		If You use Leonard, Mega or ADK(Mega2560) then you must change IEM_RXD_PIN and IEM_TXD_PIN for suitable.
 //***********************************************************
 
-// #define	DEBUG						// Define if you want to debug this library
+//#define	DEBUG						// Define if you want to debug this library
 
 #include "Arduino.h"
 #include "a4gim2.h"
 
 // Macros
 #ifdef DEBUG
-#  define debugSerial				SerialUSB
+#  define debugSerial				Serial
 #  define DEBUG_PRINT(m,v)			{ debugSerial.print("** "); debugSerial.print((m)); debugSerial.print(":"); debugSerial.println((v)); }
 #  define DEBUGP(m)         		debugSerial.print((m))
 #else

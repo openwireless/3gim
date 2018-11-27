@@ -3,6 +3,7 @@
 //
 //	History:
 //		R1.0 2018/09/02  1st Release for 4GIM(Ver1.0)
+//		R1.1 2018/11/27  Correct spelling mistake and examples.
 //
 //	Author:
 //		Open wireless Alliance and Atsushi Daikoku
@@ -23,7 +24,7 @@
 	Define constants
 */
 //	define a4gserial as hardware serial port
-#define	a4gsSerial					Serial		// Use serial port
+#define	a4gsSerial					Serial1		// Use serial port
 
 //	for compatibility of GSM.h
 #define	ctrlz						26			// Ascii character for ctr+z. End of a SMS.

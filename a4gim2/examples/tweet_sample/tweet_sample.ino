@@ -4,20 +4,19 @@
 
 #include "a4gim2.h"
 
-#define baudrate 	9600UL
-const int powerPin = 7;     // 3gim power pinIf not using power control, 0 is set.
+const int powerPin = 7;     // 4gim power pinIf not using power control, 0 is set.
 const char *token = "YOUR_TOKEN_HERE";
 const char *message = "TWEET_MESSAGE_HERE";
   //-- Note: can't tweet same message continuously.
 
 void setup()
 {
-  Serial.begin(baudrate);
+  Serial.begin(9600);
   delay(3000);  // Wait for Start Serial Monitor
   Serial.println("Ready.");
 
   Serial.print("Initializing.. ");
-  if (a4gs.start(powerPin) == 0 && a4gs.begin(0, baudrate) == 0) {
+  if (a4gs.start(powerPin) == 0 && a4gs.begin() == 0) {
     Serial.println("Succeeded.");
     Serial.print("tweet() requesting.. ");
     if (a4gs.tweet(token, message) == 0)

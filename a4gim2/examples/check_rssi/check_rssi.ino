@@ -2,17 +2,16 @@
 
 #include "a4gim2.h"
 
-#define baudrate 	9600UL
-const int powerPin = 7;     // 3gim power pin(If not using power control, 0 is set.)
+const int powerPin = 7;     // 4gim power pin(If not using power control, 0 is set.)
 
 void setup()
 {
-  Serial.begin(baudrate);
+  Serial.begin(9600);
   delay(3000);  // Wait for Start Serial Monitor
   Serial.println("Ready.");
 
   Serial.print("Initializing.. ");
-  if (a4gs.start(powerPin) == 0 && a4gs.begin(0, baudrate) == 0) {
+  if (a4gs.start(powerPin) == 0 && a4gs.begin() == 0) {
     Serial.println("Succeeded.");
     int rssi;
     if (a4gs.getRSSI(rssi) == 0) {

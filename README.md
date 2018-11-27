@@ -19,9 +19,9 @@ a3gim2またはa4gim2ライブラリは、3GIM/4GIMとの通信で使用する�
     #define　a3gSerial　　　　 Serial　　　　// Use serial port
 
   [a4gim2.h]
-    #define　a4gsSerial　　　　Serial　　　　// Use serial port
+    #define　a4gsSerial　　　　Serial1　　　// Use serial port
 
-IoTAB(V1)と3GIM/4GIMの組み合わせで使用する場合は、Serial として定義してください。
+IoTAB(V1)と3GIM/4GIMの組み合わせで使用する場合は、上記の a3gSerial/a4gsSerialをSerialとして定義してください。
 
 ## 補足
 3GIM/4GIM 等に関する技術情報は、下記のWikiサイトをご覧ください。

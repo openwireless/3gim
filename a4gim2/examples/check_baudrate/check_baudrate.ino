@@ -2,9 +2,9 @@
 
 #include "a4gim2.h"
 
-const int powerPin = 7;     // 3gim power pin(If not using power control, 0 is set.)
+const int powerPin = 7;     // 4gim power pin(If not using power control, 0 is set.)
 long baudrates[7] = { 9600, 19200, 38400, 57600, 115200 };
-	//-- 2400bps and 4800bps are not supported in 3GIM(V2)
+	//-- 2400bps and 4800bps are not supported in 4GIM(V1)
 
 void setup()
 {
