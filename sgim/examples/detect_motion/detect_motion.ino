@@ -11,15 +11,12 @@
  *  2回目以降、このスケッチを書き込む際は、書込み直前に一度リセットスイッチを押して、
  *  MCUをUSBデバイスとしてPCに認識させる必要がある。
  *
- *  [補足]
- *   あらかじめ、Sigfox backendで当該IDのデバイスのCallbackの設定を行っておく
- *   必要がある。詳しくは、 https://backend.sigfox.com/ 
  */
 
 #include <Wire.h>
 #include <RTCZero.h>
 #include <sgim.h>
-#include <mma8451q.h>
+#include <mma8452q.h>
 
 // Constants
 #define CALIBRATE_COUNT   100
@@ -46,7 +43,7 @@ const int slideSwitchPin = A1;
 const int sigfoxSleepPin = 9;
 
 // Define accelaration sensor and RTC instance
-MMA8451Q  acc(LOW);    // Accelerometer
+MMA8452Q  acc(LOW);    // Accelerometer
 RTCZero   rtc;         // Real Time Clock in atsamd21
 //SGIM      sgim;
 uint32_t  lastNotified = 0;
@@ -83,21 +80,19 @@ void setup() {
 
   Wire.begin();
 
-  // Check id
-  /***
+  // Check sensor id
   uint8_t id = acc.readRegister(m8REG_WHO_AM_I);
-  if (id != m8WHO_AM_I_MMA8451Q_ID) {
-    blinkLed(6, 300);
+  if (id != m8WHO_AM_I_MMA8452Q_ID) {
+    blinkLed(redLedPin, 6, 300);
     while (1) ;
   }
-***/
 
-  // Reset MMA8451Q
+  // Reset MMA8452Q
   acc.writeRegister(m8REG_CTRL_REG2, m8CTRL_REG2_RST);
   while (acc.readRegister(m8REG_CTRL_REG2) & m8CTRL_REG2_RST)
     ;   // wait for ready
 
-  // Set up MMA8451Q
+  // Set up MMA8452Q
   acc.writeRegister(m8REG_XYZ_DATA_CFG, XYZ_DATA_CFG);
   delay(10);
   acc.writeRegister(m8REG_CTRL_REG1, CTRL_REG1);
@@ -146,7 +141,7 @@ void setup() {
   // Set up RTC
   rtc.begin();
   rtc.setTime(12, 00, 00);
-  rtc.setDate(7, 8, 2018);
+  rtc.setDate(6, 17, 2019);
   setNextAlarm();
 
   // Inform you that you are ready by Led
@@ -229,11 +224,6 @@ void blinkLed(int pin, int counts, int cycleTime) {
   }
 }
 
-// resetMe() - Soft reset, reboot me
-void resetMe(void) {
-    NVIC_SystemReset();      // processor software reset  
-}
-
 void beep(int counts, int interval) { 
   while (counts-- > 0) {
     digitalWrite(buzzerPin, HIGH);
@@ -241,4 +231,9 @@ void beep(int counts, int interval) {
     digitalWrite(buzzerPin, LOW);
     delay(interval);
   }  
+}
+
+// resetMe() - Soft reset, reboot me
+void resetMe(void) {
+    NVIC_SystemReset();      // processor software reset  
 }
