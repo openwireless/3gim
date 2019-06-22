@@ -1,5 +1,5 @@
 /*
- * Detect motion sample with RTC
+ * detect_motion.ino -- Detect motion sample with RTC
  * 
  * [説明]
  *  常時、3g以上の加速度を検知して、検知したら2秒間だけLEDを点灯する2ンプルスケッチ。
@@ -34,18 +34,12 @@
 const int range = m8XYZ_DATA_FS_4G;
 
 // Pin difinitions
-const int buzzerPin = A0;
-const int greenLedPin = 13;
-const int yellowLedPin = 10;
-const int redLedPin = 11;
 const int pushSwitchPin = 12;
-const int slideSwitchPin = A1;
-const int sigfoxSleepPin = 9;
+const int slideSwitchPin = 11;
 
 // Define accelaration sensor and RTC instance
 MMA8452Q  acc(LOW);    // Accelerometer
 RTCZero   rtc;         // Real Time Clock in atsamd21
-//SGIM      sgim;
 uint32_t  lastNotified = 0;
 
 // For interrupts
@@ -54,26 +48,18 @@ volatile boolean   ledOn = false;
 
 void setup() {
   if (! sgim.begin()) {
-    blinkLed(redLedPin, 7, 300);
+    blinkLed(5, 300);
     while (1)
       ;       // Stop here
   }
 
-  pinMode(buzzerPin, OUTPUT);
-  digitalWrite(buzzerPin, LOW);
-  pinMode(greenLedPin, OUTPUT);
-  digitalWrite(greenLedPin, LOW);
-  pinMode(yellowLedPin, OUTPUT);
-  digitalWrite(yellowLedPin, LOW);
-  pinMode(redLedPin, OUTPUT);
-  digitalWrite(redLedPin, LOW);
   pinMode(pushSwitchPin, INPUT_PULLUP);
   pinMode(slideSwitchPin, INPUT_PULLUP);
 
   // Sleep SFM10R3
   delay(500);
   if (! sgim.sleep()) {
-    blinkLed(redLedPin, 5, 300);
+    blinkLed(7, 300);
     while (1)
       ;       // Stop here
   }
@@ -83,8 +69,9 @@ void setup() {
   // Check sensor id
   uint8_t id = acc.readRegister(m8REG_WHO_AM_I);
   if (id != m8WHO_AM_I_MMA8452Q_ID) {
-    blinkLed(redLedPin, 6, 300);
-    while (1) ;
+    blinkLed(6, 300);
+    while (1) 
+      ;       // Stop here
   }
 
   // Reset MMA8452Q
@@ -145,9 +132,9 @@ void setup() {
   setNextAlarm();
 
   // Inform you that you are ready by Led
-  blinkLed(greenLedPin, 3, 500);
+  blinkLed(3, 500);
 
-  //
+  // Set unused pins as output mode to save current consumption
   for (int i = 0; i < 10; i++) {
     switch (i) {
       case 5:
@@ -176,7 +163,6 @@ void loop() {
 
   if (! ledOn) {
     rtc.standbyMode();    // Sleep now..
-    beep(3, 200);
   }
 }
 
@@ -196,7 +182,7 @@ void onInterrupt() {
     acc.writeRegister(m8REG_CTRL_REG1, reg1);  // Sert active mode  
     
     interruptedTime = millis();
-    digitalWrite(greenLedPin, HIGH);   // Turn on led
+    sgim.setLed(1);     // Turn on  led
     ledOn = true;
   }
 }
@@ -215,22 +201,13 @@ void onAlarm(void) {
   setNextAlarm();
 }
 
-void blinkLed(int pin, int counts, int cycleTime) {
+void blinkLed(int counts, int cycleTime) {
   while (counts-- > 0) {
-    digitalWrite(pin, HIGH);
+    sgim.setLed(1);
     delay(cycleTime);
-    digitalWrite(pin, LOW);
+    sgim.setLed(0);
     delay(cycleTime);
   }
-}
-
-void beep(int counts, int interval) { 
-  while (counts-- > 0) {
-    digitalWrite(buzzerPin, HIGH);
-    delay(interval);
-    digitalWrite(buzzerPin, LOW);
-    delay(interval);
-  }  
 }
 
 // resetMe() - Soft reset, reboot me

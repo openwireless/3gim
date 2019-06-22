@@ -1,3 +1,14 @@
+/*
+ * notify.ino -- Detect motion sample with RTC
+ * 
+ * [説明]
+ *  3軸の最大加速度をSigfoxクラウドへ通知する。
+ *  シンボルACK_SIGFOXが定義されていれば、ACKあり（レスポンスあり）で通知を行う。
+ *
+ * [補足]
+ *  あらかじめ、Sigfox backendサイトで、適切な登録・設定を行っておく必要がある。
+ *  詳しくは、https://3gim.wiki/doku.php?id=sgim_v1 を参照のこと。
+ */
 
 void notifyCloud(uint16_t maxAccX, uint16_t maxAccY, uint16_t maxAccZ) {
     if (sgim.isReady()) {
@@ -8,23 +19,23 @@ void notifyCloud(uint16_t maxAccX, uint16_t maxAccY, uint16_t maxAccZ) {
 
         sgim.wakeup();
 
-#if 0
-        if (sgim.sendMessage(message)) {
-            blinkLed(yellowLedPin, 2, 200);   // Okey
-        }
-        else {
-            blinkLed(redLedPin, 5, 200);       // Failed
-        }
-#else
+#ifdef ACK_SIGFOX
         String response;
         if (sgim.sendMessageAndGetResponse(message, response)) {
-            blinkLed(yellowLedPin, 2, 200);   // Okey
+            blinkLed(3, 400);   // Okey
 
             if (response.charAt(2) != 0x03)
-              blinkLed(redLedPin, 60, 500);       // Failed
+              blinkLed(9, 200);       // Failed
         }
         else {
-            blinkLed(redLedPin, 5, 200);       // Failed
+            blinkLed(7, 200);       // Failed
+        }
+#else
+        if (sgim.sendMessage(message)) {
+            blinkLed(3, 400);       // Okey
+        }
+        else {
+            blinkLed(7, 200);       // Failed
         }
 #endif
     }
