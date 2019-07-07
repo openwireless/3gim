@@ -1,0 +1,49 @@
+#
+# Syntax Coloring Map "sgim R1.0"
+#
+
+# Library (KEYWORD3)
+sgim	KEYWORD3
+
+# Datatypes (KEYWORD1)
+SGIM	KEYWORD1
+
+# Methods and functions (KEYWORD2)
+begin	KEYWORD2
+end	KEYWORD2
+reboot	KEYWORD2
+reset	KEYWORD2
+setLed	KEYWORD2
+getVBAT	KEYWORD2
+onDetectMotion	KEYWORD2
+getID	KEYWORD2
+getPAC	KEYWORD2
+sendMessage	KEYWORD2
+sendMessageAndGetResponse	KEYWORD2
+isReady	KEYWORD2
+enterCommandMode	KEYWORD2
+exitCommandMode	KEYWORD2
+sleep	KEYWORD2
+wakeup	KEYWORD2
+isActive	KEYWORD2
+getVoltage	KEYWORD2
+getTemperature	KEYWORD2
+toHex	KEYWORD2
+
+# Constants (LITERAL1)
+sgSerial	LITERAL1
+BAUDRATE_SIGFOX	LITERAL1
+MAX_PAYLOAD_SIZE	LITERAL1
+TIMEOUT_LOCAL	LITERAL1
+TIMEOUT_UPLINK	LITERAL1
+TIMEOUT_DOWNLINK	LITERAL1
+
+ledPin  LITERAL1
+interruptPin	LITERAL1
+sigfoxStatusPin LITERAL1
+sigfoxResetPin	LITERAL1
+sigfoxCPULedPin LITERAL1
+vbatPin	LITERAL1
+markerPosMax	LITERAL1
+
+# END
