@@ -5,10 +5,12 @@
 
 ## ライブラリ
 ここには4つのライブラリがあります。下記の使い分けを想定しています。
-* a3im
+* a3gim
   * Arduino UNO/Pro等、AVRマイコンで3GIMをソフトウェアシリアルを介して利用するライブラリ
 * a3gim2
   * Arduino Mega/101/Zero/M0/Mo Pro/Due等、ハードウェアシリアルを介して3GIMを使用するライブラリ
+* a4gim
+  * Arduino UNO/Pro等、AVRマイコンで4GIMをソフトウェアシリアルを介して利用するライブラリ
 * a4gim2
   * Arduino Mega/101/Zero/M0/M0 Pro/Due、IoTAB等、ハードウェアシリアルを介して4GIMを使用するライブラリ
 * sgim
@@ -16,7 +18,6 @@
 
 ## 利用上の注意点
 a3gim2またはa4gim2ライブラリは、3GIM/4GIMとの通信で使用するシリアルに合わせて、a3gim2.hまたはa4gim2.hで定義している下記のシンボルを書き換えてご利用ください。
-
   [a3gim2.h]
     #define　a3gSerial　　　　 Serial　　　　// Use serial port
 
