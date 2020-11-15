@@ -1,0 +1,23 @@
+MGIMの外部インタフェースとしてSPIを利用したい場合は、Arduino Coreの一部を差し替える必要がある。
+具体的には、Arduino IDE 1.8.12 をインストールした後に、下記の操作で2つのファイルを差し替える。
+
+　C:\Users<ユーザ略称>\AppData\Local\Arduino15\packages\arduino\hardware\samd
+
+の下に、添付ファイルをディレクトリ構造を維持したままで解凍し、2つのファイル(variant.h/variant.cpp)を差し替える。
+
+上記の操作で、SPIが下記の3つのピンで利用できるようになる。
+　D10　MOSI
+　D11　MISO
+　D12　SCK
+
+ちなみに、SS(Slave Select)はどのGPIOピンを使ってもよい。MGIMの場合は、D8やD9の使用を推奨する（D13はボード上のLEDで使用しているので）
+
+SPIが利用できれば、下記のようなことが可能となる。
+　・シリアルSRAMをSPIで接続して、一時的なデータ保存先として利用できる。SPIなので読み書きが高速である（1ミリ秒で数百バイト）
+　　　→　シリアルSRAM(64KB)をMGIMで利用できることは確認済み　 http://akizukidenshi.com/catalog/g/gI-14062/
+　・SPIをインタフェースとして使用している各種センサが使用できる
+　　　→　超低消費電力加速度センサADXL362など　https://strawberry-linux.com/catalog/items?code=12111
+　・グラフィック液晶や液晶ペーパーなどを制御できる（デジタルサイネージとか）
+　　　→　3色液晶ペーパーなど　https://www.sengoku.co.jp/mod/sgk_cart/detail.php?code=EEHD-58WS
+
+以上
