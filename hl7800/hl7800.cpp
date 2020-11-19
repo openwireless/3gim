@@ -5,6 +5,7 @@
  *
  *  R0  2020/02/16 (A.D)
  *  R1  2020/06/21 (A.D)
+ *  R1a 2020/11/19 (A.D)  h78SERIAL.flush()を各関数の出口で呼び出すよう修正
  *
  *  Copyright(c) 2020 TABrain Inc. All rights reserved.
  */
@@ -150,6 +151,8 @@ int HL7800::getIMEI(char imei[]) {
     else
         stat = h78ERR_CANOT_GET_IMEI;
 
+    h78SERIAL.flush();      // ゴミを読み捨てる(@R1a)
+
     return (stat);
 }
 
@@ -181,6 +184,8 @@ int HL7800::getDateTime(char datetime[]) {
     }
     else
         stat = h78ERR_CANOT_GET_DATETIME;
+
+    h78SERIAL.flush();      // ゴミを読み捨てる(@R1a)
 
     return (stat);
 }
@@ -218,6 +223,8 @@ int HL7800::getDateTime(DATE_TIME *datetime) {
         datetime->minutes = atoi(dt+14);
         datetime->seconds = atoi(dt+17);
     }
+
+    h78SERIAL.flush();      // ゴミを読み捨てる(@R1a)
 
     return (stat);
 }
@@ -260,6 +267,8 @@ int HL7800::getRSSI(int *rssi) {
     else
         stat = h78ERR_INTERNAL_ERROR;
 
+    h78SERIAL.flush();      // ゴミを読み捨てる(@R1a)
+
     return (stat);
 }
 
@@ -286,6 +295,8 @@ int HL7800::getService(int *state) {
     }
     else
         stat = h78ERR_INTERNAL_ERROR;
+
+    h78SERIAL.flush();      // ゴミを読み捨てる(@R1a)
 
     return (stat);
 }
