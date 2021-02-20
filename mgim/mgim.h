@@ -4,6 +4,7 @@
  *  Control library for MGIM(LTE-M IoT Module)
  *
  *  R0  2020/03/21 (A.D)
+ *  R1  2021/02/20 (A.D) setAccelerationHandler()の綴りを修正
  *
  *  Copyright(c) 2020 TABrain Inc. All rights reserved.
  */
@@ -35,7 +36,7 @@ class MGIM {
 
       int begin(void);
       void setLed(int onOff);
-      void setAccelarationHandler(void (*handler)(void));
+      void setAccelerationHandler(void (*handler)(void));
       void powerOnExternal(void);
       void powerOffExternal(void);
       int getVIN(void);
