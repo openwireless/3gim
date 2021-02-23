@@ -4,9 +4,10 @@
  *  Control library for MGIM(LTE-M IoT Module)
  *
  *  R0  2020/03/21 (A.D)
- *  R1  2021/02/20 (A.D) setAccelerationHandler()の綴りを修正
+ *  R1  2021/02/20 (A.D) fix typo "setAccelerationHandler"
+ *  R2  2021/02/23 (A.D) add argument "mode" to setAccelerationHandler()
  *
- *  Copyright(c) 2020 TABrain Inc. All rights reserved.
+ *  Copyright(c) 2020-2021 TABrain Inc. All rights reserved.
  */
 
 #include "mgim.h"
@@ -43,7 +44,7 @@ int MGIM::begin(void) {
     digitalWrite(_hl7800Reset, LOW);        // Deactive RESET
 **/
     // Set up interrupt pin for mma8451q
-    pinMode(_int1Pin, INPUT_PULLUP);
+    pinMode(_int1Pin, INPUT);               // fix @R2
 
     return (mgSUCCESS);
 }
@@ -70,14 +71,15 @@ void MGIM::setLed(int onOff) {
  *  MGIMボード上の加速度センサの割り込みハンドラを設定・解除する
  *
  *	@param(handler)     ハンドラ関数へのポインタ(0以外)、または解除(0)
+ *  @param(mode)        割り込みモード(デフォルトでは LOW)
  *  @return             なし
  *  @detail
  */
-void MGIM::setAccelerationHandler(void (*handler)(void)) {
+void MGIM::setAccelerationHandler(void (*handler)(void), mode) {
     if (handler == NULL)
         detachInterrupt(_int1Pin);
     else
-        attachInterrupt(_int1Pin, handler, LOW);
+        attachInterrupt(_int1Pin, handler, mode);
 }
 
 /**
