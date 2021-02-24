@@ -75,7 +75,7 @@ void MGIM::setLed(int onOff) {
  *  @return             なし
  *  @detail
  */
-void MGIM::setAccelerationHandler(void (*handler)(void), mode) {
+void MGIM::setAccelerationHandler(void (*handler)(void), int mode) {
     if (handler == NULL)
         detachInterrupt(_int1Pin);
     else
