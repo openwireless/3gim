@@ -5,7 +5,7 @@
  *
  *  R0  2020/03/21 (A.D)
  *  R1  2021/02/20 (A.D) fix typo "setAccelerationHandler"
- *  R2  2021/02/23 (A.D) add argument "mode" to setAccelerationHandler()
+ *  R3  2021/04/25 (A.D) change for mgim(V4.1)
  *
  *  Copyright(c) 2020-2021 TABrain Inc. All rights reserved.
  */
@@ -16,7 +16,7 @@
 #define VIN_COUNT            10              // getVIN()で供給電圧を計測する回数
 
 // Define MGIM instance
-MGIM  mgim;
+MGIM    mgim;
 
 /**
  *  @fn
@@ -29,22 +29,20 @@ MGIM  mgim;
  */
 int MGIM::begin(void) {
     // Turn off led on board
-    pinMode(_ledPin, OUTPUT);
-    digitalWrite(_ledPin, LOW);             // Turn off
-    // Turn off external power
-    pinMode(_powerExternalPin, OUTPUT);
-    digitalWrite(_powerExternalPin, LOW);   // Turn off
+    pinMode(_mgLedPin, OUTPUT);
+    digitalWrite(_mgLedPin, LOW);           // Turn off led
     // turn off hl7800
-    pinMode(_hl7800PowerOnPin, OUTPUT);
-    digitalWrite(_hl7800PowerOnPin, LOW);   // Deactive PWR_ON_N
-/**
-    pinMode(_hl7800WakeUp, OUTPUT);
-    digitalWrite(_hl7800WakeUp, LOW);       // Deactive WAKE_UP
-    pinMode(_hl7800Reset, OUTPUT);
-    digitalWrite(_hl7800Reset, LOW);        // Deactive RESET
-**/
-    // Set up interrupt pin for mma8451q
-    pinMode(_int1Pin, INPUT);               // fix @R2
+    pinMode(_mgHL7800PowerOnPin, OUTPUT);
+    digitalWrite(_mgHL7800PowerOnPin, LOW); // Deactive PWR_ON_N
+    pinMode(_mgHL7800WakeUpPin, OUTPUT);
+    digitalWrite(_mgHL7800WakeUpPin, LOW);  // Deactive WAKEUP
+    pinMode(_mgHL7800ResetPin, OUTPUT);
+    digitalWrite(_mgHL7800ResetPin, LOW);   // Deactive RESET_IN_N
+    pinMode(_mgHL7800PowerPin, OUTPUT);
+    digitalWrite(_mgHL7800PowerPin, LOW);   // HL7800 power off
+
+    // Set up interrupt pin for LIS2WD
+    pinMode(_mgINT1Pin, INPUT);               // fix @R2
 
     return (mgSUCCESS);
 }
@@ -60,9 +58,9 @@ int MGIM::begin(void) {
  */
 void MGIM::setLed(int onOff) {
     if (onOff)
-        digitalWrite(_ledPin, HIGH);            // Turn on
+        digitalWrite(_mgLedPin, HIGH);            // Turn on
     else
-        digitalWrite(_ledPin, LOW);             // Turn off
+        digitalWrite(_mgLedPin, LOW);             // Turn off
 }
 
 /**
@@ -75,37 +73,11 @@ void MGIM::setLed(int onOff) {
  *  @return             なし
  *  @detail
  */
-void MGIM::setAccelerationHandler(void (*handler)(void), int mode) {
+void MGIM::setAccelerationHandler(void (*handler)(void), PinStatus mode) {
     if (handler == NULL)
-        detachInterrupt(_int1Pin);
+        detachInterrupt(_mgINT1Pin);
     else
-        attachInterrupt(_int1Pin, handler, mode);
-}
-
-/**
- *  @fn
- *
- *  MGIMボードの外部電源をOnにする
- *
- *	@param              なし
- *  @return             なし
- *  @detail
- */
-void MGIM::powerOnExternal(void) {
-    digitalWrite(_powerExternalPin, HIGH);
-}
-
-/**
- *  @fn
- *
- *  MGIMボードの外部電源をOffにする
- *
- *	@param              なし
- *  @return             なし
- *  @detail
- */
-void MGIM::powerOffExternal(void) {
-    digitalWrite(_powerExternalPin, LOW);
+        attachInterrupt(_mgINT1Pin, handler, mode);
 }
 
 /**
@@ -120,7 +92,7 @@ void MGIM::powerOffExternal(void) {
 int MGIM::getVIN(void) {
     int total = 0;
     for (int i = 0; i < VIN_COUNT; i++) {
-        total += analogRead(_vinPin);
+        total += analogRead(_mgVinPin);
         delay(10);
     }
 

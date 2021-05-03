@@ -5,7 +5,8 @@
  *
  *  R0  2020/02/16 (A.D)
  *  R1  2020/06/21 (A.D)
- *  R1a 2020/11/19 (A.D)  h78SERIAL.flush()を各関数の出口で呼び出すよう修正
+ *  R1a 2020/11/19 (A.D) h78SERIAL.flush()を各関数の出口で呼び出すよう修正
+ *  R3  2021/04/18 (A.D) change for mgim(V4.1)
  *
  *  Copyright(c) 2020 TABrain Inc. All rights reserved.
  */
@@ -16,8 +17,9 @@
  *  Local Symbols
  */
 #define MAX_SESSION_ID          5           // 最大のセッションID
-#define BOOTING_TIME            7000        // HL7800のブートに要する時間[mS]
+#define BOOTING_TIME            15000       // HL7800のブートに要する時間[mS] -@tune
 #define MAX_RETRY_CGATT         5           // AT+CGATTコマンドをリトライする回数
+#define N_COUNT                 10          // isPowerOn()でVGPIOを計測する回数
 
 /**
  *  @fn
@@ -40,19 +42,13 @@ int HL7800::begin(void) {
     _timeoutTcpConnect = h78TIMEOUT_CONNECT;
     _timeoutTcpWrite = h78TIMEOUT_WRITE;
 
-    // Set control pins
-    pinMode(_resetPin, OUTPUT);
-    digitalWrite(_resetPin, LOW);       // Deactive RESET_IN_N(HIGH)
-    pinMode(_wakeUpPin, OUTPUT);
-    digitalWrite(_wakeUpPin, LOW);      // Deactive WAKE_UP(LOW)
-    pinMode(_powerOnPin, OUTPUT);
-    digitalWrite(_powerOnPin, HIGH);    // Active PWR_ON_N(LOW)
-    delay(200);
-    digitalWrite(_powerOnPin, LOW);    // Deactive PWR_ON_N(HIGH)
+    // Turn on hl7800
+    digitalWrite(_powerPin, HIGH);      // HL7800 power on
 
+    // Open serial with hl7800 (Be sure to execute after turning on the power hl7800)
     h78SERIAL.begin(h78BAUDRATE);
 
-    delay(BOOTING_TIME);   //@@ 時間調整が必要
+    delay(BOOTING_TIME);    //@@ 時間調整が必要
 
     // 初期化のためのATコマンドを送る
     h78SENDFLN("ATZ");                            // 1回目のATコマンドの実行は失敗するので、当たり障りのないコマンドを実行しておく
@@ -363,27 +359,28 @@ int HL7800::setProfile(char *apn, char *user, char *password) {
  *  @detail             POFF_IMMEDIATELYが指定されたときは、RESET_IN_Nピンを使って強制的にHL7800をシャットダウンする
  */
 int HL7800::powerOff(POFF_MODE mode) {
+    digitalWrite(_wakeUpPin, LOW);      // Deactive WAKE_UP(LOW)
+
     switch (mode) {
       case POFF_NORMALY:
-        h78SENDFLN("AT+CPOF");
+        h78SENDFLN("AT+CPWROFF");
         {
             char response[100];
             int len = sizeof(response) - 1;
-            if (getResponse(h78WAITTIME_LOCAL, response, &len) == 0)
-                return (h78ERR_INTERNAL_ERROR);
+            if (getResponse(h78TIMEOUT_CPWROFF, response, &len) != h78SUCCESS)
+                h78USBDPLN("AT+CPWROFF: error");
         }
-        digitalWrite(_resetPin, HIGH);
+        digitalWrite(_powerPin, LOW);
         break;
       case POFF_IMMEDIATELY:
-        // Force turn off by RESET_IN_N pin
-        digitalWrite(_resetPin, HIGH);
-        delay(100);
+        // Force turn off without shutdown sequence
+        digitalWrite(_powerPin, LOW);
         break;
       default:
         return (h78ERR_BAD_PARAM);
     }
 
-    digitalWrite(_wakeUpPin, LOW);
+    digitalWrite(_resetPin, LOW);
     digitalWrite(_powerOnPin, LOW);
 
     return (h78SUCCESS);
@@ -398,13 +395,13 @@ int HL7800::powerOff(POFF_MODE mode) {
  *  @detail             WAKE_UPピンでHL7800を起こす
  */
 int HL7800::powerOn(void) {
-    // PWR_ON_NをLOWにする
-    digitalWrite(_powerOnPin, HIGH);
-    delay(200);
+    // Set control pins
+    digitalWrite(_resetPin, HIGH);      // Deactive RESET_IN_N(HIGH)
+    digitalWrite(_wakeUpPin, LOW);     // Active WAKE_UP(HIGH)
+    digitalWrite(_powerOnPin, LOW);    // Deactive PWR_ON_N(HIGH)
 
-    // WAKE_UPをHIGHにする
-    digitalWrite(_wakeUpPin, HIGH);
-    delay(200);
+    pinMode(_mgHL7800RTS, OUTPUT);
+    digitalWrite(_mgHL7800RTS, LOW);
 
     return (h78SUCCESS);
 }
@@ -418,8 +415,16 @@ int HL7800::powerOn(void) {
  *  @detail             HL7800のVGPIOピンの電圧で判断する
  */
 boolean HL7800::isPowerOn(void) {
-    int mV = analogRead(_1v8pin) * 3.226;
-    return (mV > 1700);
+    int total = 0;
+    for (int i = 0; i < N_COUNT; i++) {
+        int mV = analogRead(_mgHL7800VGPIOPin) * 3.226;
+        total += mV;
+        delay(2);
+    }
+
+    h78USBDPLN(">> VGPIO=%d", total);
+
+    return ((total / N_COUNT) > (1800 * 0.7));
 }
 
 /**

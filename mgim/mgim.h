@@ -6,6 +6,7 @@
  *  R0  2020/03/21 (A.D)
  *  R1  2021/02/20 (A.D) fix typo "setAccelerationHandler"
  *  R2  2021/02/23 (A.D) add argument "mode" to setAccelerationHandler()
+ *  R3  2021/04/25 (A.D) change for mgim(V4.1)
  *
  *  Copyright(c) 2020-2021 TABrain Inc. All rights reserved.
  */
@@ -16,16 +17,29 @@
 #include <Arduino.h>
 
 //-- On board devices
-#define mgSTTS751_I2C_ADDDR         0b0111011    // I2C address of stts751 on board
-#define mgSERIAL_MONITOR            SerialUSB    // Serial monitor port
-#define mgSERIAL_EXTERNAL           Serial1      // External zwrial port
+#define mgSTTS751_I2C_ADDDR         0b0111011   // I2C address of stts751 on board
+#define mgSERIAL_MONITOR            SerialUSB   // Serial monitor port
+#define mgSERIAL_EXTERNAL           Serial1     // External Serial port
 
 //-- Error codes
   // Succeed(No error)
-#define mgSUCCESS                   0            // When the call is successful
+#define mgSUCCESS                   0           // When the call is successful
   // common errors
-#define mgERR_BAD_PARAM             100          // Bad parameters
-#define mgERR_ERROR                 101          // Unknown error
+#define mgERR_BAD_PARAM             100         // Bad parameters
+#define mgERR_ERROR                 101         // Unknown error
+
+//-- Pin definitions
+const int _mgLedPin                 = 7;        // [out] On board Led (On:HIGH/Off:LOW)
+const int _mgINT1Pin                = 6;        // [in] LIS2DWTR interrupt #1 (Active:LOW)
+const int _mgHL7800PowerPin         = 4;        // [out] HL7800 power control (On:HIGH/Off:LOW)
+const int _mgVinPin                 = A5;       // [in] VIN * 1/2
+const int _mgHL7800WakeUpPin        = 2;        // [out] HL7800 WAKEUP (Active:HIGH)
+const int _mgHL7800ResetPin         = 5;        // [out] HL7800 RESET_IN_N (Active:LOW)
+const int _mgHL7800PowerOnPin       = 38;       // [out] HL7800 PWR_ON_N (Active:LOW)
+const int _mgHL7800VGPIOPin         = A3;       // [out] HL7800 VGPIO (1.8V:On/0V:Off)
+const int _mgHL7800ShutdownPin      = 22;       // [out] HL7800 Shutdown (Active:LOW)
+const int _mgHL7800CTS              = 23;       // [in] HL7800 UART CTS
+const int _mgHL7800RTS              = 24;       // [out] HL7800 UART RTS
 
 //-- Class definition
 class MGIM {
@@ -37,21 +51,11 @@ class MGIM {
 
       int begin(void);
       void setLed(int onOff);
-      void setAccelerationHandler(void (*handler)(void), int mode = LOW);
-      void powerOnExternal(void);
-      void powerOffExternal(void);
+      void setAccelerationHandler(void (*handler)(void), PinStatus mode = LOW);
       int getVIN(void);
 
   private:
-      // Pin definitions
-      const int _ledPin = 7;            // [out] On board Led (Active:HIGH)
-      const int _powerExternalPin = 6;  // [out] External power on (Active:HIGH)
-      const int _hl7800PowerOnPin = 4;  // [out] HL7800 Power on (Active:HIGH)
-      const int _hl7800WakeUp = 3;      // [out] HL7800 Wake up (Active:HIGH)
-      const int _hl7800Reset = 2;       // [out] HL7800 Reset (Active:HIGH)
-      const int _hl7800Vgpio = A3;      // [out] HL7800 VGPIO
-      const int _int1Pin = 5;           // [in] MMA8451Q Interrupt #1 (Active:LOW)
-      const int _vinPin = A5;           // [in] VIN * 1/2
+      //
 };
 
 // Declare MGIM instance

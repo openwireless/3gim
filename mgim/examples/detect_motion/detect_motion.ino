@@ -17,7 +17,7 @@
 #include <Wire.h>
 #include <mgim.h>
 #include <RTCZero.h>
-#include <mma8451q.h>
+#include <lis2dw.h>
 
 #undef DEBUG_USB
 
@@ -35,19 +35,15 @@
 #define ALARM_INTERVAL    3       // Alarm interval [min.]
 
 // Initial settings
-#define XYZ_DATA_CFG      (m8XYZ_DATA_FS_4G)
-//#define CTRL_REG1         (m8CTRL_REG1_DR_50HZ)
-#define CTRL_REG1         (m8CTRL_REG1_DR_12_5HZ)
-//#define CTRL_REG2         (m8CTRL_REG2_MODE_HIGH_RES)
-#define CTRL_REG2         (m8CTRL_REG2_MODE_NORMAL)
-#define CTRL_REG3         (m8CTRL_REG3_PP_OD)
-#define CTRL_REG4         (m8CTRL_REG4_INT_EN_FF_MT)
-#define CTRL_REG5         (m8CTRL_REG5_INT_CFG_FF_MT)
+// Initial settings
+#define REG_CTRL1     (s2ODR_200 | s2MODE_HIGH_PERFORMANCE)
+#define REG_CTRL2     (s2CTRL2_BDU)
+#define REG_CTRL6     (s2FS_2G | s2CTRL6_LOW_NOISE | s2BW_FILT_DIV2)
 
-const int range = m8XYZ_DATA_FS_4G;
+const int range = s2FS_2G;
 
 // Define accelaration sensor and RTC instance
-MMA8451Q  acc(LOW);    // Accelerometer
+LIS2DW    acc(HIGH);   // Accelerometer
 RTCZero   rtc;         // Real Time Clock in atsamd21
 
 // For interrupts
@@ -64,64 +60,38 @@ void setup(void) {
   Wire.begin();
 
   // Check id
-  uint8_t id = acc.readRegister(m8REG_WHO_AM_I);
-  if (id != m8WHO_AM_I_MMA8451Q_ID) {
+  delay(10);    // Wait for lis2dw to complete booting
+  uint8_t id = acc.readRegister(s2REG_WHO_AM_I);
+  if (id != s2WHO_AM_I_ID) {
     DBG("Bad id=0x");
     DBGLN(id, HEX);
     while (1) ;       // Stop here
   }
 
-  // Reset MMA8451Q
-  acc.writeRegister(m8REG_CTRL_REG2, m8CTRL_REG2_RST);
-  while (acc.readRegister(m8REG_CTRL_REG2) & m8CTRL_REG2_RST)
+  // Reset LIS2DW
+  acc.writeRegister(s2REG_CTRL2, s2CTRL2_SOFT_RESET);
+  while (acc.readRegister(s2REG_CTRL2) & s2CTRL2_SOFT_RESET)
     ;   // wait for ready
 
-  // Set up MMA8451Q
-  acc.writeRegister(m8REG_XYZ_DATA_CFG, XYZ_DATA_CFG);
-  delay(10);
-  acc.writeRegister(m8REG_CTRL_REG1, CTRL_REG1);
-  delay(10);
-  acc.writeRegister(m8REG_CTRL_REG2, CTRL_REG2);
-  delay(10);
-  acc.writeRegister(m8REG_CTRL_REG3, CTRL_REG3);
-  delay(10);
-    // Set motion detect parameters
-  acc.writeRegister(m8REG_FF_MT_CFG, 0xD8);		  // Set OAE=1, enabling X, Y, and the latch
-  delay(10);
-  acc.writeRegister(m8REG_FF_MT_THS, 48);		  // Set motion detection of > 3g
-  delay(10);
-//  acc.writeRegister(m8REG_FF_MT_COUNT, 5);		  // Set debounce counter to eliminate false readings for 50 Hz sample rate with a requirement of 100 ms timer
-  acc.writeRegister(m8REG_FF_MT_COUNT, 2);      // Set debounce counter to eliminate false readings for 50 Hz sample rate with a requirement of 100 ms timer
-  delay(10);
-  acc.writeRegister(m8REG_CTRL_REG4, CTRL_REG4);  // Enable Motion/Freefall Interrupt Function
-  delay(10);
-  acc.writeRegister(m8REG_CTRL_REG5, CTRL_REG5);  // Route the Motion/Freefall Interrupt Function to INT1
-  delay(10);
-
-  // Start measurement!
-  uint8_t reg1 = acc.readRegister(m8REG_CTRL_REG1);
-  reg1 |= m8CTRL_REG1_ACTIVE;
-  acc.writeRegister(m8REG_CTRL_REG1, reg1);    // and Go!
-
-  // Calibrate accelarations
-  int tx = 0, ty = 0, tz = 0;
-  for (int n = 0; n < CALIBRATE_COUNT; n++) {
-    int ax, ay, az;
-    acc.getAccelerations(&ax, &ay, &az);
-    tx += ax;
-    ty += ay;
-    tz += az;
-  }
-  tx /= CALIBRATE_COUNT;
-  tx = tx >> 3;
-  acc.writeRegister(m8REG_OFF_X, (- tx & 0xff));
-  ty /= CALIBRATE_COUNT;
-  ty = ty >> 3;
-  acc.writeRegister(m8REG_OFF_Y, (- ty & 0xff));
-  tz /= CALIBRATE_COUNT;
-  tz = tz >> 3;
-  tz -= 4095;
-  acc.writeRegister(m8REG_OFF_Z, (- tz & 0xff));
+  // Set up LIS2DW
+  acc.writeRegister(s2REG_CTRL1, REG_CTRL1);
+  delay(1);
+  acc.writeRegister(s2REG_CTRL2, REG_CTRL2);
+  delay(1);
+  acc.writeRegister(s2REG_CTRL6, REG_CTRL6);
+  delay(1);
+  //
+  uint8_t reg = acc.readRegister(s2REG_CTRL7);
+  acc.writeRegister(s2REG_CTRL7, reg | s2CTRL7_USR_OFF_ON_OUT);
+  //
+  reg = acc.readRegister(s2REG_WAKE_UP_DUR);
+  acc.writeRegister(s2REG_WAKE_UP_DUR, reg | (s2WAKE_UP_DUR_WAKE_DUR_MASK & 0));
+  // Set Wake-Up threshold: 1 LSb corresponds to FS_XL/2^6
+  reg = acc.readRegister(s2REG_WAKE_UP_THS);
+  acc.writeRegister(s2REG_WAKE_UP_THS, reg | (s2WAKE_UP_THS_WK_THS_MASK & 2));
+  // Set route WU to INT1
+  reg = acc.readRegister(s2REG_CTRL4_INT1_PAD_CTRL);
+  acc.writeRegister(s2REG_CTRL4_INT1_PAD_CTRL, reg | s2CTRL4_INT1_WU);
 
   // Set up RTC (Set Mar/03/2020 00:00:00, for now)
   rtc.begin();
@@ -133,27 +103,11 @@ void setup(void) {
   blinkLed(3, 300);
   DBGLN("Ready.");
 
-  // Turn off hl7800
-  delay(10000);
-  Serial.begin(115200);
-  Serial.println("ATZ");
-  delay(300);
-  Serial.println("AT+CEDRXS=1");
-  delay(300);
-  Serial.println("AT+CPWROFF=1");
-  Serial.flush();
-  delay(300);
-  Serial.end();
-  pinMode(3, OUTPUT);
-  digitalWrite(3, LOW);
-  pinMode(2, OUTPUT);
-  digitalWrite(2, HIGH);
-
   for (int i = 0; i < mgim.numberOfExternalPins; i++)
     pinMode(mgim.externalPins[i], OUTPUT);
 
   // Set interrupt handler
-  mgim.setAccelarationHandler(onDetectMotion);
+  mgim.setAccelerationHandler(onDetectMotion);
   rtc.attachInterrupt(onAlarm);     // Enable alarm interrupt
 }
 
@@ -163,19 +117,14 @@ void loop(void) {
     mgim.setLed(0);   // Turn off led
     ledOn = false;
 
-    acc.readRegister(m8REG_FF_MT_SRC);  // Clear INT1
-    delay(10);
+    // Clear INT1
+    acc.readRegister(s2REG_ALL_INT_SRC);
 
-    uint8_t reg1 = acc.readRegister(m8REG_CTRL_REG1);
-    reg1 &= ~m8CTRL_REG1_ACTIVE;
-    acc.writeRegister(m8REG_CTRL_REG1, reg1);  // Set standby mode
-    delay(10);
-    acc.writeRegister(m8REG_CTRL_REG4, CTRL_REG4);
-    delay(10);
-    reg1 |= m8CTRL_REG1_ACTIVE;
-    acc.writeRegister(m8REG_CTRL_REG1, reg1);  // Set active mode
+    // Set route WU to INT1
+    uint8_t reg = acc.readRegister(s2REG_CTRL4_INT1_PAD_CTRL);
+    acc.writeRegister(s2REG_CTRL4_INT1_PAD_CTRL, reg | s2CTRL4_INT1_WU);
 
-    mgim.setAccelarationHandler(onDetectMotion);  // Enable interrupt again
+    mgim.setAccelerationHandler(onDetectMotion);  // Enable interrupt again
   }
 
   if (! ledOn)
@@ -184,22 +133,21 @@ void loop(void) {
 
 // onDetectMotion() -- hendler on detect motion
 void onDetectMotion(void) {
-  mgim.setAccelarationHandler(0);        // Disable interrupt
+  mgim.setAccelerationHandler(0);        // Disable interrupt
 
-  uint8_t intSource = acc.readRegister(m8REG_INT_SOURCE);
-  if (intSource & m8INT_SOURCE_SRC_FF_MT) {
-    acc.readRegister(m8REG_FF_MT_SRC);         // Clear INT1
+  uint8_t intSource = acc.readRegister(s2REG_ALL_INT_SRC);  // Read interrupt sources and cleat INT1/2
+  if (intSource & s2INT_SRC_WU_IA) {
+      uint8_t wuSource = acc.readRegister(s2REG_WAKE_UP_SRC);
+      if (wuSource & (s2WAKE_UP_SRC_X_WU | s2WAKE_UP_SRC_Y_WU | s2WAKE_UP_SRC_Z_WU)) {
 
-    uint8_t reg1 = acc.readRegister(m8REG_CTRL_REG1);
-    reg1 &= ~m8CTRL_REG1_ACTIVE;
-    acc.writeRegister(m8REG_CTRL_REG1, reg1);  // Set standby mode
-    acc.writeRegister(m8REG_CTRL_REG4, 0);     // Disable FF/MT INT
-    reg1 |= m8CTRL_REG1_ACTIVE;
-    acc.writeRegister(m8REG_CTRL_REG1, reg1);  // Sert active mode
+          // Set route WU to INT1
+          uint8_t reg = acc.readRegister(s2REG_CTRL4_INT1_PAD_CTRL);
+          acc.writeRegister(s2REG_CTRL4_INT1_PAD_CTRL, reg & ~s2CTRL4_INT1_WU);
 
-    interruptedTime = millis();
-    mgim.setLed(1);     // Turn on led
-    ledOn = true;
+          interruptedTime = millis();
+          mgim.setLed(1);     // Turn on led
+          ledOn = true;
+      }
   }
 }
 

@@ -1,0 +1,20 @@
+{
+    "name": "mgim",
+    "keywords": "tiny,internet",
+    "description": "The mgim(lte-m iot module) library aims to controls the tiny microcontroller board MGIM with LTE-M communication function.",
+    "authors":
+    {
+        "name": "A.D",
+        "email": "info@tabrain.jp",
+        "url": "https://github.com/openwireless/3gim/tree/master/mgim",
+        "maintainer": true
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/openwireless/3gim/tree/master/mgim"
+    },
+    "version": "0.3.0",
+    "frameworks": "arduino",
+    "platforms": "atmelsam"
+}

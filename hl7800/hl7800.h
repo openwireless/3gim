@@ -6,6 +6,7 @@
  *  R0  2020/02/16 (A.D)
  *  R1  2020/08/03 (A.D)
  *  R2  2020/10/11 (A.D)
+ *  R3  2021/04/25 (A.D) change for mgim(V4.1)
  *
  *  Copyright(c) 2020 TABrain Inc. All rights reserved.
  */
@@ -14,7 +15,9 @@
 #define  _hl7800_h_
 
 #include <Arduino.h>
+#include <mgim.h>
 
+//-- DEBUG CONFIGURATION --
 //#define DUMMY_TEST
 //#define DEBUG_USB                             // When this symbol is defined, you can debug by connecting a PC to USB
 
@@ -35,6 +38,7 @@
 #define h78TIMEOUT_WRITE            60000       // Timeout of tcp write [mS]
 #define h78TIMEOUT_WRITE_BURST      3000        // Timeout of tcp burst write [mS]
 #define h78TIMEOUT_UDP              10000       // Timeout of udp [mS]
+#define h78TIMEOUT_CPWROFF          120000      // Timeout of power off [mS]
   // Misc..
 #define h78IMEI_SIZE                15          // IMEI length[bytes] - '\0' is not included.
 #define h78DATETIME_SIZE            19          // Date and time length[bytes] - '\0' is not included.
@@ -145,8 +149,10 @@ typedef void (*CALLBACK_FUNC)(void);
 class HL7800 {
   public:
     // Constructor with default parameters
-    HL7800(int powerOnPin = 4, int resetPin = 2, int wakeUpPin = 3): _powerOnPin(powerOnPin), _resetPin(resetPin), _wakeUpPin(wakeUpPin) {
-        _1v8pin = A3;
+    HL7800(int powerPin = _mgHL7800PowerPin, int powerOnPin = _mgHL7800PowerOnPin,
+            int resetPin = _mgHL7800ResetPin, int wakeUpPin = _mgHL7800WakeUpPin):
+            _powerPin(powerPin), _powerOnPin(powerOnPin), _resetPin(resetPin), _wakeUpPin(wakeUpPin) {
+        _vgpioPin = _mgHL7800VGPIOPin;
         _initialized = false;
         _httpSessionId = _tcpSessionId = _udpSessionId = 0;
     }
@@ -197,7 +203,7 @@ class HL7800 {
     // HTTP/HTTPS functions
     int doHttpGet(char *url, char *header, char *response, int *responseSize);
     int doHttpPost(char *url, char *header, void *body, int bodySize, char *response, int *responseSize);
-    // int requestHttpPost(char *url, char *header, char *body, CALLBACK_RESPONSE handleResponse);
+    // int requestHttpPost(char *url, char *header, char *body, CALLBACK_FUNC handleResponse);
 
     // Misc.
     int getResponse(uint32_t timeout, char *response, int *size);
@@ -231,10 +237,9 @@ class HL7800 {
     int _timeoutTcpConnect;
     int _timeoutTcpWrite;
      // HL7800 control pins
-    int _powerOnPin;    // High:Power on/Low:Power off
-    int _resetPin;      // High:Reset/Low: No reset
-    int _wakeUpPin;     // High:Wake up/Low: Not wake up
-    int _1v8pin;        // VGPIO pin (1.8V:On/0V:Off)
+    int _powerPin, _powerOnPin, _resetPin, _wakeUpPin, _vgpioPin;
+    const int _RTS = 24;        // [out] RTS (Active:LOW)
+    const int _CTS = 24;        // [in] CTS
 };
 
 #endif // _hl7800_h_
