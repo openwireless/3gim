@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map "ambient_3gim"
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+Ambient_3gim	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+Ambient_3gim	KEYWORD2
+begin	KEYWORD2
+set	KEYWORD2
+clear	KEYWORD2
+send	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+AMBIENT_WRITEKEY_SIZE	LITERAL1
+AMBIENT_MAX_RETRY	LITERAL1
+AMBIENT_DATA_SIZE	LITERAL1
+AMBIENT_NUM_PARAMS	LITERAL1
+AMBIENT_TIMEOUT	LITERAL1
+## END
