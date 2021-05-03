@@ -1,10 +1,11 @@
-# Arduino library for 3GIM(V2.2-), 4GIM(V1-) SGIM(V1-) and MGIM(V1.1-)
+# Arduino library for 3GIM(V2.2-), 4GIM(V1-) SGIM(V1-) and MGIM(V4.1-)
 
 ## 概要
 タブレインが企画・製造・販売している小型3G通信モジュール3GIM(V2.2以降)および4GIM(V1以降)を、Arduinoで簡単に利用するためのライブラリを公開します。
 
 ## ライブラリ
-ここには4つのライブラリがあります。下記の使い分けを想定しています。
+ここには、以下のライブラリを置いています。
+
 * a3gim
   * Arduino UNO/Pro等、AVRマイコンで3GIMをソフトウェアシリアルを介して利用するライブラリ
 * a3gim2
@@ -16,9 +17,15 @@
 * sgim
   * sgim(Sgifox通信モジュールを搭載したArduino Zero互換小型マイコンボード)を使用するためのライブラリ
 * mgim
-  * mgim(LTE-M通信モジュールを搭載したArduino Zero互換小型マイコンボード)を使用するためのライブラリ
+  * MGIM(LTE-M通信モジュールを搭載したArduino Zero互換小型マイコンボード)を使用するためのライブラリ
 * hl7800
-  * mgimに搭載されているLTE-M通信モジュールHL7800を使用するためのライブラリ（mgimと一緒に利用）
+  * MGIMに搭載されているLTE-M通信モジュールHL7800Mを使用するためのライブラリ
+* stts751
+  * SGIM,MGIMに搭載されている温度センサの制御ライブラリ
+* mma8451q
+  * SGIMに搭載されている加速度センサの制御ライブラリ
+* lis2dw
+  * MGIMに搭載されている加速度センサの制御ライブラリ
 
 ## 利用上の注意点
 a3gim2またはa4gim2ライブラリは、3GIM/4GIMとの通信で使用するシリアルに合わせて、a3gim2.hまたはa4gim2.hで定義している下記のシンボルを書き換えてご利用ください。
@@ -31,5 +38,3 @@ a3gim2またはa4gim2ライブラリは、3GIM/4GIMとの通信で使用する�
 IoTAB(V1)と3GIM/4GIMの組み合わせで使用する場合は、上記の a3gSerial/a4gsSerialをSerialとして定義してください。
 
 ## 補足
-3GIM/4GIM/SGIM 等に関する技術情報は、下記のWikiサイトをご覧ください。
-[3gim Wiki](https://3gim.wiki)
