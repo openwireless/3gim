@@ -1,0 +1,20 @@
+{
+    "name": "ambient_mgim",
+    "keywords": "IoT,ambient,mgim",
+    "description": "ambient_mgim library aims to upload the data to Ambient cloud service easily.",
+    "authors":
+    {
+        "name": TABrain Inc. and Takehiko Shimojima(AmbientData Inc.),
+        "email": "info@tabrain.jp",
+        "url": "http://tabrain.jp/",
+        "maintainer": true
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/openwireless/3gim/tree/master/ambient_mgim"
+    },
+    "version": "0.1.0",
+    "frameworks": "arduino",
+    "platforms": "atmelsam"
+}

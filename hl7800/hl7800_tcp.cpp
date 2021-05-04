@@ -5,6 +5,7 @@
  *
  *  R0  2020/02/16 (A.D)
  *  R1  2020/06/21 (A.D)
+ *  R3  2021/05/05 (A.D) change for mgim(V4.1)
  *
  *  Copyright(c) 2020 TABrain Inc. All rights reserved.
  */
@@ -137,10 +138,8 @@ int	HL7800::readTCP(void *buf, int size) {
 	h78SENDFLN("AT+KTCPSTAT=%d", _tcpSessionId);
 	if ((stat = parseKTCPSTAT(&status, &tcpNotif, NULL, &receivedBytes)) == h78SUCCESS) {
 		switch (status) {
-		  case 0 :
-		  case 3 :
-		  case 4 :
-		  case 5 :
+		  case 1 :	// socket is only defined but not used
+		  case 3 :	// connection is up, socket can be used to send/receivedata
 			// status ok
 			break;
 		  default :
@@ -184,7 +183,7 @@ int	HL7800::readTCP(void *buf, int size) {
  *
  *	@param(buf)			[in] 読み出したデータの格納先
  *	@param(size)		[in] bufに格納されているデータのサイズ[Bytes]
- *  @return             0:データなし、0～:成功時(読み出したバイト数)、～0:エラー時(エラー番号のマイナス値)
+ *  @return             0:データなし、0～:成功時(書き込んだバイト数)、～0:エラー時(エラー番号のマイナス値)
  *  @detail
  */
 int	HL7800::writeTCP(const void *buf, int size) {
