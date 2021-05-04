@@ -1,7 +1,7 @@
 {
     "name": "hl7800",
     "keywords": "hl7800,lte-m,iot",
-    "description": The hl7800 library aims to controls the Sierra Wireless's HL7800(LTE-M communication module).",
+    "description": "The hl7800 library aims to controls the Sierra Wireless's HL7800(LTE-M communication module).",
     "authors":
     {
         "name": "A.D",

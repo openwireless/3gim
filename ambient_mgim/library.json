@@ -4,7 +4,7 @@
     "description": "ambient_mgim library aims to upload the data to Ambient cloud service easily.",
     "authors":
     {
-        "name": TABrain Inc. and Takehiko Shimojima(AmbientData Inc.),
+        "name": "TABrain Inc. and Takehiko Shimojima(AmbientData Inc.)",
         "email": "info@tabrain.jp",
         "url": "http://tabrain.jp/",
         "maintainer": true
