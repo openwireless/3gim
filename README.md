@@ -11,14 +11,14 @@
 | a3gim | Arduino UNO/Pro等、AVRマイコンで3GIMをソフトウェアシリアルを介して利用するライブラリ | |
 | a3gim2 | Arduino Mega/101/Zero/M0/Mo Pro/Due等、ハードウェアシリアルを介して3GIMを使用するライブラリ | |
 | a4gim | Arduino UNO/Pro等、AVRマイコンで4GIMをソフトウェアシリアルを介して利用するライブラリ | |
-| a4gim2 Arduino Mega/101/Zero/M0/M0 Pro/Due、IoTAB等、ハードウェアシリアルを介して4GIMを使用するライブラリ | |
+| a4gim2 | Arduino Mega/101/Zero/M0/M0 Pro/Due、IoTAB等、ハードウェアシリアルを介して4GIMを使用するライブラリ | |
 | sgim | sgim(Sgifox通信モジュールを搭載したArduino Zero互換小型マイコンボード)を使用するためのライブラリ | |
 | mgim | MGIM(LTE-M通信モジュールを搭載したArduino Zero互換小型マイコンボード)を使用するためのライブラリ | |
-| hl7800 | MGIMに搭載されているLTE-M通信モジュールHL7800Mを使用するためのライブラリ | |
-| stts751 | SGIM,MGIMに搭載されている温度センサの制御ライブラリ | |
-| mma8451q | SGIMに搭載されている加速度センサの制御ライブラリ | |
-| lis2dw | MGIMに搭載されている加速度センサの制御ライブラリ | |
-| ambient_mgim | MGIMを使ってIoTクラウドサービスAmbientaを利用するためのライブラリ | |
+| hl7800 | MGIMに搭載されているLTE-M通信モジュールHL7800Mを使用するためのライブラリ | mgimで使用 |
+| stts751 | SGIM,MGIMに搭載されている温度センサの制御ライブラリ | sgim/mgimで使用 |
+| mma8451q | SGIMに搭載されている加速度センサの制御ライブラリ | sgimで使用 |
+| lis2dw | MGIMに搭載されている加速度センサの制御ライブラリ | mgimで使用 |
+| ambient_mgim | MGIMを使ってIoTクラウドサービスAmbientaを利用するためのライブラリ | mgimと一緒に使用 |
 
 ## Arduino IDEで、これらのライブラリを利用する方法
 * このページから、ライブラリ一式をZIPファイルとしてダウンロードします。ダウンロードは、下記の図にあるように、本ページの右上にある「↓Code」ボタンを押してメニューを表示させ、「Download ZIP」を選択してください。
