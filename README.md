@@ -37,10 +37,10 @@
 ```
     #define　a3gSerial　　　　 Serial　　　　// Use serial port
 ```
-
   * a4gim2.h
 ```
     #define　a4gsSerial　　　　Serial1　　　// Use serial port
 ```
 
 * IoTAB(V1)と3GIM/4GIMの組み合わせで使用する場合は、上記の a3gSerial/a4gsSerialをSerialとして定義してください。
+* SGIM/MGIMをArduino IDEで使用する場合は、マイコンボードとして「Arduino Zero(Native USB Port)」を選択してください。このボードはArduino純正ですが、標準インストールではARM用のツールチェインはインストールされませんので、別途指定してインストールする必要があります。
