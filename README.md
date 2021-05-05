@@ -9,7 +9,7 @@
 | ライブラリ名 | 概要 | 補足 |
 | --- | --- | --- |
 | a3gim | Arduino UNO/Pro等、AVRマイコンで3GIMをソフトウェアシリアルを介して利用するライブラリ | |
-| a3gim2 | Arduino Mega/101/Zero/M0/Mo Pro/Due等、ハードウェアシリアルを介して3GIMを使用するライブラリ | |
+| a3gim2 | Arduino Mega/Zero//Due等、ハードウェアシリアルを介し3GIMを使用するライブラリ | |
 | a4gim | Arduino UNO/Pro等、AVRマイコンで4GIMをソフトウェアシリアルを介して利用するライブラリ | |
 | a4gim2 | Arduino Mega/Zero//Due等、ハードウェアシリアルを介して4GIMを使用するライブラリ | |
 | sgim | sgim(Sgifox通信モジュールを搭載したArduino Zero互換小型マイコンボード)を使用するためのライブラリ | |
