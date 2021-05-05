@@ -3,7 +3,7 @@
  *
  *  Digital temperature sensor STTS751 control library
  *
- *  R0  2020/02/29 (605e)
+ *  R0.1  2020/02/29 (605e)
  *
  *  Copyright(c) 2020 TABrain Inc. All rights reserved.
  */

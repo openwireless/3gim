@@ -9,7 +9,7 @@
  *      R0.5 2019/04/14  change sgTIMEOUT_UPLINK(10sec. -> 15Sec.)
  *      R0.6 2019/12/23  change rebootSigfoxModule(), fix timeout bug in sendBuffer()
  *      R0.7 2020/08/10  add getVBAT(), change settings of analogReferense() and analogResolution()
- *      &0.8 2020/09/21  fix getVBAT()
+ *      R1.0 2020/09/21  fix getVBAT()
  *
  *	Author:
  *		Open wireless Alliance and TABrain Inc.

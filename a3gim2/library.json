@@ -1,0 +1,20 @@
+{
+    "name": "3gim2",
+    "keywords": "3G,IoT,prototyping",
+    "description": "3gim2 library aims to use 3GIM with hardware serial easily.",
+    "authors":
+    {
+        "name": "TABrain Inc.",
+        "email": "info@tabrain.jp",
+        "url": "http://tabrain.jp/",
+        "maintainer": true
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/openwireless/3gim/tree/master/3gim2"
+    },
+    "version": "4.3.0",
+    "frameworks": "arduino",
+    "platforms": "*"
+}

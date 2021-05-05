@@ -1,0 +1,20 @@
+{
+    "name": "4gim",
+    "keywords": "LTE,IoT,prototyping",
+    "description": "4gim library aims to use 4GIM with software serial easily.",
+    "authors":
+    {
+        "name": "TABrain Inc.",
+        "email": "info@tabrain.jp",
+        "url": "http://tabrain.jp/",
+        "maintainer": true
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/openwireless/3gim/tree/master/4gim"
+    },
+    "version": "1.0.0",
+    "frameworks": "arduino",
+    "platforms": "atmelavr"
+}

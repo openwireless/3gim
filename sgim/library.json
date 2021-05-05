@@ -1,0 +1,20 @@
+{
+    "name": "sgim",
+    "keywords": "Sigfox,IoT,tiny microcontroller board",
+    "description": "The sgim(sigfox iot module) library aims to controls the tiny microcontroller board SGIM with Sigfox communication function.",
+    "authors":
+    {
+        "name": "A.D",
+        "email": "info@tabrain.jp",
+        "url": "http://tabrain.jp/",
+        "maintainer": true
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/openwireless/3gim/tree/master/sgim"
+    },
+    "version": "1.0.0",
+    "frameworks": "arduino",
+    "platforms": "atmelsam"
+}

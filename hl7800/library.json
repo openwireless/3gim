@@ -1,12 +1,12 @@
 {
     "name": "hl7800",
-    "keywords": "hl7800,lte-m,iot",
+    "keywords": "lte-m,IoT,hl7800",
     "description": "The hl7800 library aims to controls the Sierra Wireless's HL7800(LTE-M communication module).",
     "authors":
     {
         "name": "A.D",
         "email": "info@tabrain.jp",
-        "url": "https://github.com/openwireless/3gim/tree/master/hl7800",
+        "url": "http://tabrain.jp/",
         "maintainer": true
     },
     "repository":

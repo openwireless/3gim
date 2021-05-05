@@ -1,0 +1,20 @@
+{
+    "name": "lis2dw",
+    "keywords": "accelerometer,IoT,motion detection,monitor earthquake",
+    "description": "The lis2dw library aims to controls the STMicroelectronics's LIS2DW(high-performance, ultra-low-power 3-axis 'femto' MEMS accelerometer).",
+    "authors":
+    {
+        "name": "A.D",
+        "email": "info@tabrain.jp",
+        "url": "http://tabrain.jp/",
+        "maintainer": true
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/openwireless/3gim/tree/master/lis2dw"
+    },
+    "version": "1.0.0",
+    "frameworks": "arduino",
+    "platforms": "*"
+}

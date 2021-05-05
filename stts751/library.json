@@ -1,0 +1,20 @@
+{
+    "name": "stts751",
+    "keywords": "temperature,IoT,stts751",
+    "description": "The stts751 library aims to controls the STMicroelectronics's STTS751(low-voltage local digital temperature sensor).",
+    "authors":
+    {
+        "name": "A.D",
+        "email": "info@tabrain.jp",
+        "url": "http://tabrain.jp/",
+        "maintainer": true
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/openwireless/3gim/tree/master/stts751"
+    },
+    "version": "0.1.0",
+    "frameworks": "arduino",
+    "platforms": "*"
+}
