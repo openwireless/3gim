@@ -132,7 +132,7 @@
 // Types and classes
   // Power off mode
 typedef enum {
-    POFF_NORMALY,           // When turning off the power normally
+    POFF_NORMALLY,          // When turning off the power normally
     POFF_IMMEDIATELY        // When turning off the power in a hurry(Not recommended)
 } POFF_MODE;
 
