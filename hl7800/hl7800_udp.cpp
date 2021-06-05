@@ -102,7 +102,7 @@ int  HL7800::sendUDP(char *host, int port, void *msg, int size) {
     h78USBDPLN("\"");
 #endif
 
-    int stat, length = 0;
+    int stat = 0;
 
     // Check that session is exist
     if (_udpSessionId == 0)
@@ -152,11 +152,11 @@ int  HL7800::getNameUDP(char *ip) {
     if (_udpSessionId == 0)
         return (h78ERR_NOT_YET_INITIALIZED);
 
-	char	ipAddress[h78IP_V4_ADDRESS_LENGTH + 1];
-	// Get UDP status
-	h78SENDFLN("AT+KCGPADDR=1");		// Specify <cnx_cnf>
-	if (parseKCGPADDR(ipAddress) != h78SUCCESS)
-		return (h78ERR_UDP_NAME);
+    char ipAddress[h78IP_V4_ADDRESS_LENGTH + 1];
+    // Get UDP status
+    h78SENDFLN("AT+KCGPADDR=1");		// Specify <cnx_cnf>
+    if (parseKCGPADDR(ipAddress) != h78SUCCESS)
+        return (h78ERR_UDP_NAME);
 
     h78USBDPLN("+>KCGPADDR: %s", ipAddress);
     strcpy(ip, ipAddress);

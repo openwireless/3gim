@@ -269,7 +269,9 @@ int HL7800::doHttpPost(char *url, char *header, void *body, int bodySize, char *
  *  @detail
  */
 int HL7800::splitUrl(char *url, char *host, int *port, char *path, int *useSSL) {
+#ifdef DEBUG_USB
     char *hp = host, *pp = path;
+#endif // DEBUG_USB
     int portNum;
     // Check protocol
     if (! strncmp(url, "https://", 8)) {

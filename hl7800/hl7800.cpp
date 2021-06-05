@@ -362,7 +362,7 @@ int HL7800::powerOff(POFF_MODE mode) {
     digitalWrite(_wakeUpPin, LOW);      // Deactive WAKE_UP(LOW)
 
     switch (mode) {
-      case POFF_NORMALY:
+      case POFF_NORMALLY:
         h78SENDFLN("AT+CPWROFF");
         {
             char response[100];
@@ -396,8 +396,8 @@ int HL7800::powerOff(POFF_MODE mode) {
  */
 int HL7800::powerOn(void) {
     // Set control pins
-    digitalWrite(_resetPin, HIGH);      // Deactive RESET_IN_N(HIGH)
-    digitalWrite(_wakeUpPin, LOW);     // Active WAKE_UP(HIGH)
+    digitalWrite(_resetPin, HIGH);     // Deactive RESET_IN_N(HIGH)
+    digitalWrite(_wakeUpPin, HIGH);    // Active WAKE_UP(HIGH)
     digitalWrite(_powerOnPin, LOW);    // Deactive PWR_ON_N(HIGH)
 
     pinMode(_mgHL7800RTS, OUTPUT);
@@ -482,7 +482,7 @@ int HL7800::getResponse(uint32_t timeout, char *resp, int *size) {
     while (millis() < limit) {
         char lastline[10];
         int len = *size - length;
-        if (len < sizeof(lastline) - 1) {
+        if (len < (int)sizeof(lastline) - 1) {
             h78USBDP("++else1++BEGIN++");
             len = sizeof(lastline) - 1;
             resp =lastline;

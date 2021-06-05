@@ -168,7 +168,7 @@ class HL7800 {
     int getRSSI(int *rssi);
     int getService(int *state);
     int setProfile(char *apn, char *user, char *password);
-    int powerOff(POFF_MODE mode = POFF_NORMALY);
+    int powerOff(POFF_MODE mode = POFF_NORMALLY);
     int powerOn(void);
     boolean isPowerOn(void);
     int reset(void);        // Not implemented(R1)
@@ -187,7 +187,7 @@ class HL7800 {
     int readTCP(void *msg, int size);
     int writeTCP(const void *msg, int size);
     int writeTCP(const char *buf) {
-        writeTCP((const void *)buf, strlen(buf));
+        return (writeTCP((const void *)buf, strlen(buf)));
     };
     int writeBurstTCP(int size);
     int getNameTCP(char *ip);
@@ -211,12 +211,12 @@ class HL7800 {
   private:
     // Methods
     void discardResponse(uint32_t timeout);
-    int getSessionId(uint32_t timeout, char *ind, int *udpSessionId);
+    int getSessionId(uint32_t timeout, const char *ind, int *udpSessionId);
     int waitUntilCONNECT(uint32_t timeout);
     int getLine(uint32_t limit, char *line, int size);
     int parseCGATT(int *state);
     int parseCCLK(char *resp, char *datetime);
-    int waitUntilReady(uint32_t timeout, char *prefix, int sessionId);
+    int waitUntilReady(uint32_t timeout, const char *prefix, int sessionId);
     int parseKTCPSTAT(int *status, int *tcpNotif, int *remainedBytes, int *recievedBytes);
     int	parseKCGPADDR(char *ipAddress);
     int getData(uint32_t timeout, char *resp, int *size);

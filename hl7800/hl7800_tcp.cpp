@@ -27,21 +27,21 @@
  *  @detail
  */
 int	HL7800::connectTCP(const char *host, int port) {
-	int stat = h78SUCCESS;
+    int stat = h78SUCCESS;
     // Check parameters
-	if (port < 0 || port > h78MAX_PORT_NUMBER)
+    if (port < 0 || port > h78MAX_PORT_NUMBER)
         return (h78ERR_BAD_PARAM);   	// port number error
 
-	if (strlen(host) > h78MAX_HOST_LENGTH)
-		return (h78ERR_BAD_PARAM);		// too long host name
+    if (strlen(host) > h78MAX_HOST_LENGTH)
+    return (h78ERR_BAD_PARAM);		// too long host name
 
-	// Check that session is not exist
-	if (_tcpSessionId != 0)
-		return (h78ERR_TCP_ALREADY_CONNECTED);	// Already connected
+    // Check that session is not exist
+    if (_tcpSessionId != 0)
+    return (h78ERR_TCP_ALREADY_CONNECTED);	// Already connected
 
-	// Connect to host
-	h78SENDFLN("AT+KTCPCFG=1,0,\"%s\",%d", host, port);
-	if ((stat = getSessionId(h78TIMEOUT_LOCAL, "+KTCPCFG:", &_tcpSessionId)) == h78SUCCESS) {
+    // Connect to host
+    h78SENDFLN("AT+KTCPCFG=1,0,\"%s\",%d", host, port);
+    if ((stat = getSessionId(h78TIMEOUT_LOCAL, "+KTCPCFG:", &_tcpSessionId)) == h78SUCCESS) {
         h78USBDPLN("+>KTCPCFG OK");
 
         // Try to connect and wait until TCP connection is ready
@@ -52,24 +52,24 @@ int	HL7800::connectTCP(const char *host, int port) {
         }
 
         stat = h78ERR_TCP_CONNECT;
-		h78USBDPLN("+>KTCP_IND *,1 Not Found: ", stat);
+    h78USBDPLN("+>KTCP_IND *,1 Not Found: ", stat);
     }
     else {
         stat = h78ERR_TCP_CONFIG;
         h78USBDPLN("+>KTCPCFG NG: ", stat);
     }
 
-	// Close tcp session and delete it (ignore errors)
-	h78SENDFLN("AT+KTCPCLOSE=%d", _tcpSessionId);
-	discardResponse(500);
+    // Close tcp session and delete it (ignore errors)
+    h78SENDFLN("AT+KTCPCLOSE=%d", _tcpSessionId);
+    discardResponse(500);
     h78SENDFLN("AT+KTCPDEL=%d", _tcpSessionId);
     discardResponse(500);
 
-	// Clear tcp session id
-	_tcpSessionId = 0;
+    // Clear tcp session id
+    _tcpSessionId = 0;
 
 
-	return (stat);	// Something error
+    return (stat);	// Something error
 }
 
 /**
@@ -82,32 +82,32 @@ int	HL7800::connectTCP(const char *host, int port) {
  *  @detail
  */
 int	HL7800::disconnectTCP(void) {
-	int	stat = h78SUCCESS;
-	char response[30];
+    int	stat = h78SUCCESS;
+    char response[30];
 
-	// Check that session is exist
-	if (_tcpSessionId == 0)
+    // Check that session is exist
+    if (_tcpSessionId == 0)
         return (h78ERR_TCP_NOT_YET_CONNECTED);
 
-	// Close tcp session
+    // Close tcp session
     h78SENDFLN("AT+KTCPCLOSE=%d", _tcpSessionId);
-	int len = sizeof(response) - 1;
-	if ((stat = getResponse(h78TIMEOUT_LOCAL, response, &len)) != h78SUCCESS) {
-		h78USBDPLN("+>KTCPCLOSE NG: ", stat);
-		// Throuh if the error was happened
-	}
-	h78USBDPLN("+>KTCPCLOSE Pass");
+    int len = sizeof(response) - 1;
+    if ((stat = getResponse(h78TIMEOUT_LOCAL, response, &len)) != h78SUCCESS) {
+    h78USBDPLN("+>KTCPCLOSE NG: ", stat);
+    // Throuh if the error was happened
+    }
+    h78USBDPLN("+>KTCPCLOSE Pass");
 
-	// Delete tcp session
+    // Delete tcp session
     h78SENDFLN("AT+KTCPDEL=%d", _tcpSessionId);
-	len = sizeof(response) - 1;
-	if ((stat = getResponse(h78TIMEOUT_LOCAL, response, &len)) != h78SUCCESS) {
-		h78USBDPLN("+>KTCPDEL NG: ", stat);
+    len = sizeof(response) - 1;
+    if ((stat = getResponse(h78TIMEOUT_LOCAL, response, &len)) != h78SUCCESS) {
+    h78USBDPLN("+>KTCPDEL NG: ", stat);
         stat = h78ERR_TCP_DELETE;
     }
-	h78USBDPLN("+>KTCPDEL OK");
+    h78USBDPLN("+>KTCPDEL OK");
 
-	_tcpSessionId = 0;		// Clear tcpSessionId
+    _tcpSessionId = 0;		// Clear tcpSessionId
 
   	return (stat);
 }
@@ -123,57 +123,57 @@ int	HL7800::disconnectTCP(void) {
  *  @detail
  */
 int	HL7800::readTCP(void *buf, int size) {
-	int	stat = h78SUCCESS;
+    int	stat = h78SUCCESS;
 
-	// Check parameters
+    // Check parameters
     if (size <= 0 || size > h78MAX_TCP_READ_SIZE || buf == NULL)
         return (- h78ERR_BAD_PARAM);
 
-	// Check that session is exist
-	if (_tcpSessionId == 0)
+    // Check that session is exist
+    if (_tcpSessionId == 0)
         return (- h78ERR_TCP_NOT_YET_CONNECTED);
 
-	// Get TCP status
-	int requestBytes = size, status = -1, tcpNotif = 0, receivedBytes = 0;
-	h78SENDFLN("AT+KTCPSTAT=%d", _tcpSessionId);
-	if ((stat = parseKTCPSTAT(&status, &tcpNotif, NULL, &receivedBytes)) == h78SUCCESS) {
-		switch (status) {
-		  case 1 :	// socket is only defined but not used
-		  case 3 :	// connection is up, socket can be used to send/receivedata
-			// status ok
-			break;
-		  default :
-			// illegal status
-			h78USBDPLN("+>KTCPSTAT status: ", status);
-			return (- h78ERR_TCP_STATUS);
-		}
-		if (receivedBytes == 0) {
-			// no received data
-			return (0);
-		}
-		else if (requestBytes > receivedBytes)
-			requestBytes =  receivedBytes;
-	}
-	else {
-		h78USBDPLN("+>KTCPSTAT NG: ", stat);
-		return (- h78ERR_TCP_STATUS);
-	}
+    // Get TCP status
+    int requestBytes = size, status = -1, tcpNotif = 0, receivedBytes = 0;
+    h78SENDFLN("AT+KTCPSTAT=%d", _tcpSessionId);
+    if ((stat = parseKTCPSTAT(&status, &tcpNotif, NULL, &receivedBytes)) == h78SUCCESS) {
+    switch (status) {
+      case 1 :	// socket is only defined but not used
+      case 3 :	// connection is up, socket can be used to send/receivedata
+    // status ok
+    break;
+      default :
+    // illegal status
+    h78USBDPLN("+>KTCPSTAT status: ", status);
+    return (- h78ERR_TCP_STATUS);
+    }
+    if (receivedBytes == 0) {
+    // no received data
+    return (0);
+    }
+    else if (requestBytes > receivedBytes)
+    requestBytes =  receivedBytes;
+    }
+    else {
+    h78USBDPLN("+>KTCPSTAT NG: ", stat);
+    return (- h78ERR_TCP_STATUS);
+    }
 
-	// Receive data from the connection
+    // Receive data from the connection
     h78SENDFLN("AT+KTCPRCV=%d,%d", _tcpSessionId, requestBytes);
-	if (waitUntilCONNECT(h78TIMEOUT_WRITE) == h78SUCCESS) {
-		int len = requestBytes;
-		if ((stat = getData(h78TIMEOUT_WRITE, (char *)buf, &len)) != h78SUCCESS) {
-			h78USBDPLN("getData() NG: %d", stat);
-			return (- h78ERR_TCP_READ);
-		}
-		h78USBDPLN("+>KTCPRCV OK: %d", len);
-		return (len);		// OK
-	}
-	else {
-		// Can't connect..
-		return (- h78ERR_TCP_CONNECT);
-	}
+    if (waitUntilCONNECT(h78TIMEOUT_WRITE) == h78SUCCESS) {
+    int len = requestBytes;
+    if ((stat = getData(h78TIMEOUT_WRITE, (char *)buf, &len)) != h78SUCCESS) {
+    h78USBDPLN("getData() NG: %d", stat);
+    return (- h78ERR_TCP_READ);
+    }
+    h78USBDPLN("+>KTCPRCV OK: %d", len);
+    return (len);		// OK
+    }
+    else {
+    // Can't connect..
+    return (- h78ERR_TCP_CONNECT);
+    }
 }
 
 /**
@@ -187,36 +187,36 @@ int	HL7800::readTCP(void *buf, int size) {
  *  @detail
  */
 int	HL7800::writeTCP(const void *buf, int size) {
-	int stat = h78SUCCESS;
+    int stat = h78SUCCESS;
 
-	// Check parameters
-	if (size <= 0 || size > h78MAX_TCP_WRITE_SIZE || buf == NULL)
-		return (- h78ERR_BAD_PARAM);
+    // Check parameters
+    if (size <= 0 || size > h78MAX_TCP_WRITE_SIZE || buf == NULL)
+    return (- h78ERR_BAD_PARAM);
 
-	// Check that session is exist
-	if (_tcpSessionId == 0)
-		return (- h78ERR_TCP_NOT_YET_CONNECTED);
+    // Check that session is exist
+    if (_tcpSessionId == 0)
+    return (- h78ERR_TCP_NOT_YET_CONNECTED);
 
-	// Send data to the connection
-	h78SENDFLN("AT+KTCPSND=%d,%d", _tcpSessionId, size);
-	if ((stat = waitUntilCONNECT(_timeoutTcpWrite)) != h78SUCCESS) {
-		h78USBDPLN("+>KTCPSND NG: %d", stat);
-		return (- h78ERR_TCP_WRITE);
-	}
+    // Send data to the connection
+    h78SENDFLN("AT+KTCPSND=%d,%d", _tcpSessionId, size);
+    if ((stat = waitUntilCONNECT(_timeoutTcpWrite)) != h78SUCCESS) {
+    h78USBDPLN("+>KTCPSND NG: %d", stat);
+    return (- h78ERR_TCP_WRITE);
+    }
 
-	// Send data
-	h78SEND((uint8_t *)buf, size);
-	// and end pettern
-	h78SENDF(h78END_PATTERN);
-	char resp[20];
-	int len = sizeof(resp) - 1;
-	if ((stat = getResponse(_timeoutTcpWrite, resp, &len)) != h78SUCCESS) {
-		h78USBDPLN("+>KTCPSND NG: %d", stat);
-		return (- h78ERR_TCP_WRITE);
-	}
-	h78USBDPLN("+>KTCPSND OK: %d", size);
+    // Send data
+    h78SEND((uint8_t *)buf, size);
+    // and end pettern
+    h78SENDF(h78END_PATTERN);
+    char resp[20];
+    int len = sizeof(resp) - 1;
+    if ((stat = getResponse(_timeoutTcpWrite, resp, &len)) != h78SUCCESS) {
+    h78USBDPLN("+>KTCPSND NG: %d", stat);
+    return (- h78ERR_TCP_WRITE);
+    }
+    h78USBDPLN("+>KTCPSND OK: %d", size);
 
-	return (size);	// OK
+    return (size);	// OK
 }
 
 /**
@@ -230,24 +230,24 @@ int	HL7800::writeTCP(const void *buf, int size) {
  *						データを複数回に分けて書き込む場合は、一定以上の間を空けないこと。
  */
 int	HL7800::writeBurstTCP(int size) {
-	int stat = h78SUCCESS;
+    int stat = h78SUCCESS;
 
-	// Check parameters
-	if (size <= 0 || size > h78MAX_TCP_DATA_SIZE_ONCE)
-		return (- h78ERR_BAD_PARAM);
+    // Check parameters
+    if (size <= 0 || size > h78MAX_TCP_DATA_SIZE_ONCE)
+    return (- h78ERR_BAD_PARAM);
 
-	// Check that session is exist
-	if (_tcpSessionId == 0)
-		return (- h78ERR_TCP_NOT_YET_CONNECTED);
+    // Check that session is exist
+    if (_tcpSessionId == 0)
+    return (- h78ERR_TCP_NOT_YET_CONNECTED);
 
-	// Send data to the connection
-	h78SENDFLN("AT+KTCPSND=%d,%d", _tcpSessionId, size);
-	if ((stat = waitUntilCONNECT(h78TIMEOUT_WRITE)) == h78SUCCESS) {
-		h78USBDPLN("+>KTCPSND NG: %d", stat);
-		return (h78ERR_TCP_WRITE);
-	}
+    // Send data to the connection
+    h78SENDFLN("AT+KTCPSND=%d,%d", _tcpSessionId, size);
+    if ((stat = waitUntilCONNECT(h78TIMEOUT_WRITE)) == h78SUCCESS) {
+    h78USBDPLN("+>KTCPSND NG: %d", stat);
+    return (h78ERR_TCP_WRITE);
+    }
 
-	return (h78SUCCESS);
+    return (h78SUCCESS);
 }
 
 /**
@@ -278,47 +278,47 @@ int	HL7800::writeBurstTCP(int size) {
  *  @detail
  */
 int	HL7800::getStatusTCP(int *status, int *tcpNotif, int *remainedBytes, int *recievedBytes) {
-	int	st, stat = h78SUCCESS;
+    int	st, stat = h78SUCCESS;
 
-	// Pre-set out parameters
-	*status = 0;
-	*tcpNotif = 0;
-	*remainedBytes = *recievedBytes = 0;
+    // Pre-set out parameters
+    *status = 0;
+    *tcpNotif = 0;
+    *remainedBytes = *recievedBytes = 0;
 
-	// Check that session is exist
-	if (_tcpSessionId == 0)
-		return (- h78ERR_TCP_NOT_YET_CONNECTED);
+    // Check that session is exist
+    if (_tcpSessionId == 0)
+    return (- h78ERR_TCP_NOT_YET_CONNECTED);
 
-	// Get TCP status
-	h78SENDFLN("AT+KTCPSTAT=%d", _tcpSessionId);
-	if ((stat = parseKTCPSTAT(&st, tcpNotif, remainedBytes, recievedBytes)) != h78SUCCESS) {
-		h78USBDPLN("+>KTCPSTAT NG: %d", stat);
-		return (h78ERR_TCP_STAT);
-	}
+    // Get TCP status
+    h78SENDFLN("AT+KTCPSTAT=%d", _tcpSessionId);
+    if ((stat = parseKTCPSTAT(&st, tcpNotif, remainedBytes, recievedBytes)) != h78SUCCESS) {
+    h78USBDPLN("+>KTCPSTAT NG: %d", stat);
+    return (h78ERR_TCP_STAT);
+    }
 
-	switch (st) {
+    switch (st) {
       case 0 :	   // Not defined
         *status = h78TCPSTAT_NOT_DEFINED;
         break;
-	  case 1 :     // Disconnected
-		*status = h78TCPSTAT_DISCONNECTED;
-		break;
-	  case 2 :	    // Connecting
-		*status = h78TCPSTAT_CONNECTING;
-		break;
-	  case 3 :     	// Connected
-		*status = h78TCPSTAT_CONNECTED;
-		break;
-	  case 4 :     // Closing, wait for status 5
-	  case 5 :     // Closed
-		*status = h78TCPSTAT_CLOSED;
-		break;
-	  default :    	// Unknown status
-		*status = h78TCPSTAT_UNKNOWN;
-		break;
-	}
+      case 1 :     // Disconnected
+    *status = h78TCPSTAT_DISCONNECTED;
+    break;
+      case 2 :	    // Connecting
+    *status = h78TCPSTAT_CONNECTING;
+    break;
+      case 3 :     	// Connected
+    *status = h78TCPSTAT_CONNECTED;
+    break;
+      case 4 :     // Closing, wait for status 5
+      case 5 :     // Closed
+    *status = h78TCPSTAT_CLOSED;
+    break;
+      default :    	// Unknown status
+    *status = h78TCPSTAT_UNKNOWN;
+    break;
+    }
 
-	return (h78SUCCESS);
+    return (h78SUCCESS);
 }
 
 /**
@@ -331,22 +331,22 @@ int	HL7800::getStatusTCP(int *status, int *tcpNotif, int *remainedBytes, int *re
  *  @detail				ipは最低h78IP_V4_ADDRESS_LENGTHバイト以上のサイズがあること
  */
 int	HL7800::getNameTCP(char *ip) {
-	int	stat = h78SUCCESS;
+    int	stat = h78SUCCESS;
 
-	// Check that session is exist
-	if (_tcpSessionId == 0)
-		return (- h78ERR_TCP_NOT_YET_CONNECTED);
+    // Check that session is exist
+    if (_tcpSessionId == 0)
+    return (- h78ERR_TCP_NOT_YET_CONNECTED);
 
-	// Get TCP status
-	char ipAddress[h78IP_V4_ADDRESS_LENGTH+1];
-	h78SENDFLN("AT+KCGPADDR=1");		// Specify <cnx_cnf>
-	if ((stat = parseKCGPADDR(ipAddress)) != h78SUCCESS) {
-		h78USBDPLN("+>KCGPADDR NG: %d", stat);
-		return (h78ERR_TCP_ADDR);
-	}
-	strcpy(ip, ipAddress);
+    // Get TCP status
+    char ipAddress[h78IP_V4_ADDRESS_LENGTH+1];
+    h78SENDFLN("AT+KCGPADDR=1");		// Specify <cnx_cnf>
+    if ((stat = parseKCGPADDR(ipAddress)) != h78SUCCESS) {
+    h78USBDPLN("+>KCGPADDR NG: %d", stat);
+    return (h78ERR_TCP_ADDR);
+    }
+    strcpy(ip, ipAddress);
 
-	return (h78SUCCESS);
+    return (h78SUCCESS);
 }
 
 /**
@@ -370,7 +370,7 @@ int HL7800::configureTCP(uint32_t timeoutConnect, uint32_t timeoutWrite) {
     _timeoutTcpConnect = timeoutConnect;
     _timeoutTcpWrite = timeoutWrite;
 
-	return (h78SUCCESS);
+    return (h78SUCCESS);
 }
 
 /**
@@ -383,34 +383,34 @@ int HL7800::configureTCP(uint32_t timeoutConnect, uint32_t timeoutWrite) {
  *  @detail
  */
 int	HL7800::parseKCGPADDR(char *ipAddress) {
-	uint32_t limit = millis() + h78TIMEOUT_LOCAL;
+    uint32_t limit = millis() + h78TIMEOUT_LOCAL;
 
-	while (true) {
-		char line[h78IP_V4_ADDRESS_LENGTH + 20];
-		int len;
-		if ((len = getLine(limit, line, sizeof(line))) == 0)
-			break;		// Timed out
+    while (true) {
+    char line[h78IP_V4_ADDRESS_LENGTH + 20];
+    int len;
+    if ((len = getLine(limit, line, sizeof(line))) == 0)
+    break;		// Timed out
 
-		// (ex.) +KCGPADDR: 1,"192.168.1.49"
-		if (len > 10 && ! strncmp(line, "+KCGPADDR:", 10)) {
-			h78USBDPLN("+KCGPADDR>");
-			h78USBDPWRT(line, len);
-			h78USBDPLN("<");
+    // (ex.) +KCGPADDR: 1,"192.168.1.49"
+    if (len > 10 && ! strncmp(line, "+KCGPADDR:", 10)) {
+    h78USBDPLN("+KCGPADDR>");
+    h78USBDPWRT(line, len);
+    h78USBDPLN("<");
 
-			for (char *p = line + 14; *p != '"'; )
-				*ipAddress++ = *p++;
-			*ipAddress = '\0';		// terminate string
+    for (char *p = line + 14; *p != '"'; )
+    *ipAddress++ = *p++;
+    *ipAddress = '\0';		// terminate string
 
-			return (h78SUCCESS);
-		}
-		else if (len > 5 && ! strncmp(line, "ERROR", 5)) {
-			h78USBDPLN(">ERROR");
-			return (h78ERR_TCP_ADDR);
-		}
-	}
+    return (h78SUCCESS);
+    }
+    else if (len > 5 && ! strncmp(line, "ERROR", 5)) {
+    h78USBDPLN(">ERROR");
+    return (h78ERR_TCP_ADDR);
+    }
+    }
 
-	h78USBDPLN("T/O>");
-	return (h78ERR_TIMED_OUT);
+    h78USBDPLN("T/O>");
+    return (h78ERR_TIMED_OUT);
 }
 
 /*
@@ -443,56 +443,56 @@ int	HL7800::parseKCGPADDR(char *ipAddress) {
  */
 int	HL7800::parseKTCPSTAT(int *status, int *tcpNotif, int *remainedBytes, int *recievedBytes)
 {
-	uint32_t limit = millis() + h78TIMEOUT_LOCAL;
+    uint32_t limit = millis() + h78TIMEOUT_LOCAL;
 
-	while (true) {
-		char line[30];
-		int len;
-		if ((len = getLine(limit, line, sizeof(line))) == 0)
-			break;		// Timed out
+    while (true) {
+    char line[30];
+    int len;
+    if ((len = getLine(limit, line, sizeof(line))) == 0)
+    break;		// Timed out
 
-		// (ex.) +KTCPSTAT: 3,-1,0,0
-		if (! strncmp(line, "+KTCPSTAT: ", 11)) {
-			*status = atoi(line+11);
-			h78USBDPLN("+KTCPSTAT>\n");
-			h78USBDPWRT(line, len);
-			h78USBDPLN("<");
-			h78USBDPLN(">status=%d", *status);
-			int	nthComma = 0;
-			for (int i = 11; i < len; i++) {
-				if (line[i] == ',') {
-					nthComma++;
-					if (nthComma == 1) {
-						int n = atoi(line + i + 1);
-						if (tcpNotif != NULL)
-							*tcpNotif = n;
-						h78USBDPLN(">tcpNotif=%d", n);
-					}
-					else if (nthComma == 2) {
-						int n = atoi(line + i + 1);
-						if (remainedBytes != NULL)
-							*remainedBytes = n;
-						h78USBDPLN(">remBytes=%d", n);
-					}
-					else {	// nthComma == 3
-						int n = atoi(line + i + 1);
-						if (recievedBytes != NULL)
-							*recievedBytes = n;
-						h78USBDPLN(">rcvBytes=%d", n);
-					}
-				}
-			}
+    // (ex.) +KTCPSTAT: 3,-1,0,0
+    if (! strncmp(line, "+KTCPSTAT: ", 11)) {
+    *status = atoi(line+11);
+    h78USBDPLN("+KTCPSTAT>\n");
+    h78USBDPWRT(line, len);
+    h78USBDPLN("<");
+    h78USBDPLN(">status=%d", *status);
+    int	nthComma = 0;
+    for (int i = 11; i < len; i++) {
+    if (line[i] == ',') {
+    nthComma++;
+    if (nthComma == 1) {
+    int n = atoi(line + i + 1);
+    if (tcpNotif != NULL)
+    *tcpNotif = n;
+    h78USBDPLN(">tcpNotif=%d", n);
+    }
+    else if (nthComma == 2) {
+    int n = atoi(line + i + 1);
+    if (remainedBytes != NULL)
+    *remainedBytes = n;
+    h78USBDPLN(">remBytes=%d", n);
+    }
+    else {	// nthComma == 3
+    int n = atoi(line + i + 1);
+    if (recievedBytes != NULL)
+    *recievedBytes = n;
+    h78USBDPLN(">rcvBytes=%d", n);
+    }
+    }
+    }
 
-			return (h78SUCCESS);
-		}
-		else if (! strncmp(line, "ERROR", 5)) {
-			h78USBDPLN(">ERROR");
-			return (h78ERR_INTERNAL_ERROR);
-		}
-	}
-	h78USBDPLN("T.O>");
+    return (h78SUCCESS);
+    }
+    else if (! strncmp(line, "ERROR", 5)) {
+    h78USBDPLN(">ERROR");
+    return (h78ERR_INTERNAL_ERROR);
+    }
+    }
+    h78USBDPLN("T.O>");
 
-	return (h78ERR_TIMED_OUT);
+    return (h78ERR_TIMED_OUT);
 }
 
 /**
@@ -507,15 +507,15 @@ int	HL7800::parseKTCPSTAT(int *status, int *tcpNotif, int *remainedBytes, int *r
  *  @detail
  */
 int HL7800::getData(uint32_t timeout, char *resp, int *size) {
-	uint32_t limit = millis() + timeout;
-	int length = 0;
-	int c;
-	while (millis() < limit && length < *size) {
-		if ((c = h78SERIAL.read()) < 0)
+    uint32_t limit = millis() + timeout;
+    int length = 0;
+    int c;
+    while (millis() < limit && length < *size) {
+    if ((c = h78SERIAL.read()) < 0)
             continue;       // Skip
-		*resp++ = (char)c;
-		length++;
-	}
+    *resp++ = (char)c;
+    length++;
+    }
     *size = length;
 
     if (length < *size)
