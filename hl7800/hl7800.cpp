@@ -51,13 +51,15 @@ int HL7800::begin(void) {
     delay(BOOTING_TIME);    //@@ 時間調整が必要
 
     // 初期化のためのATコマンドを送る
-    h78SENDFLN("ATZ");                            // 1回目のATコマンドの実行は失敗するので、当たり障りのないコマンドを実行しておく
+    h78SENDFLN("ATZ");                              // 1回目のATコマンドの実行は失敗するので、当たり障りのないコマンドを実行しておく
     discardResponse(h78WAITTIME_LOCAL);
-    h78SENDFLN("ATE1");                            // Echo back on
+    h78SENDFLN("AT+CFUN=1,1");                      // set phone FULL functionality and reset
     discardResponse(h78WAITTIME_LOCAL);
-    h78SENDFLN("AT+KSLEEP=2");                     // Don't sleep
+    h78SENDFLN("ATE1");                             // Echo back on
     discardResponse(h78WAITTIME_LOCAL);
-    h78SENDFLN("AT+KPATTERN=\"%s\"", h78END_PATTERN);     // set SHORT eof pattern string
+    h78SENDFLN("AT+KSLEEP=2");                      // Don't sleep
+    discardResponse(h78WAITTIME_LOCAL);
+    h78SENDFLN("AT+KPATTERN=\"%s\"", h78END_PATTERN);   // set SHORT eof pattern string
     discardResponse(h78WAITTIME_LOCAL);
 
 /**
@@ -139,7 +141,7 @@ int HL7800::getIMEI(char imei[]) {
     char response[50];
     int len = sizeof(response) - 1;
     h78SENDFLN("AT+CGSN");
-    if ((stat = getResponse(h78WAITTIME_LOCAL, response, &len)) == 0 && len > (h78IMEI_SIZE + 9)) {
+    if ((stat = getResponse(h78WAITTIME_LOCAL, response, &len)) == h78SUCCESS && len > (h78IMEI_SIZE + 9)) {
         strncpy(imei, response + 11, h78IMEI_SIZE);
         imei[h78IMEI_SIZE] = '\0';
         stat = h78SUCCESS;
@@ -170,7 +172,7 @@ int HL7800::getDateTime(char datetime[]) {
     h78SENDFLN("AT+CCLK?");
     char response[100];
     int stat, len = sizeof(response) - 1;
-    if ((stat = getResponse(h78WAITTIME_LOCAL, response, &len)) == 0) {
+    if ((stat = getResponse(h78WAITTIME_LOCAL, response, &len)) == h78SUCCESS) {
         response[len] = '\0';
         h78USBDPLN("RES>%s<RES", response);
         if ((stat = parseCCLK(response, datetime)) == 0)
@@ -199,7 +201,7 @@ int HL7800::getDateTime(DATE_TIME *datetime) {
     h78SENDFLN("AT+CCLK?");
     char response[100], dt[20];
     int stat, len = sizeof(response) - 1;
-    if ((stat = getResponse(h78WAITTIME_LOCAL, response, &len)) == 0) {
+    if ((stat = getResponse(h78WAITTIME_LOCAL, response, &len)) == h78SUCCESS) {
         response[len] = '\0';
         h78USBDPLN("RES>%s<RES", response);
         if ((stat = parseCCLK(response, dt)) == 0)
@@ -244,7 +246,7 @@ int HL7800::getRSSI(int *rssi) {
     char response[100];
     int len = sizeof(response) - 1;
     h78SENDFLN("AT+CSQ");  // Signal Quality
-    if ((stat = getResponse(h78WAITTIME_LOCAL, response, &len)) == 0) {
+    if ((stat = getResponse(h78WAITTIME_LOCAL, response, &len)) == h78SUCCESS) {
         h78USBDPLN("RES>%s<RES", response);
         char sq[5];
         int i, offset = 15;
