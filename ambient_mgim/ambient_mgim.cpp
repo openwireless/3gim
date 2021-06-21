@@ -47,7 +47,7 @@ int Ambient_mgim::begin(unsigned int channelId, const char * writeKey) {
     _channelId = channelId;
     sprintf(_url, "http://54.65.206.59/api/v2/channels/%d/data", _channelId);
 
-    strcpy(_header, "Content-Type: application/json$r$n");
+    strcpy(_header, "Content-Type: application/json");
 
     for (int i = 0; i < amNUM_FIELDS; i++)
         _data[i].used = false;
@@ -142,16 +142,16 @@ int Ambient_mgim::send(void) {
 
     // Bodyを作る
     memset(body, 0, sizeof(body));
-    strcat(body, "{$\"writeKey$\":$\"");
+    strcat(body, "{\"writeKey\":\"");
     strcat(body, _writeKey);
-    strcat(body, "$\"");
+    strcat(body, "\"");
 
     for (int i = 0; i < amNUM_FIELDS; i++) {
         if (_data[i].used) {
             strcat(body, ",");
             strcat(body, keys[i]);
             strcat(body, _data[i].item);
-            strcat(body, "$\"");
+            strcat(body, "\"");
         }
     }
     strcat(body, "}");

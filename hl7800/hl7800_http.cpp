@@ -7,6 +7,7 @@
  *  R1  2020/08/03 (A.D)
  *  R2  2020/10/11 (A.D)
  *  R2a 2020/11/14 (A.D)
+ *  R3  2021/06/21 (A.D) fix getBody() when empty body
  *
  *  Copyright(c) 2020 TABrain Inc. All rights reserved.
  */
@@ -224,7 +225,7 @@ int HL7800::doHttpPost(char *url, char *header, void *body, int bodySize, char *
             return (h78ERR_HTTP_BODY_RES);
         }
         *responseSize = len;
-        h78USBDPLN("+>KHTTPPOST OK");
+        h78USBDPLN("+>KHTTPPOST OK: %d", httpStatusCode);
         // Check HTTP status
         if (100 <= httpStatusCode && httpStatusCode < 400) {
             // HTTP 0 (1xx, 2xx or 3xx)
@@ -243,6 +244,7 @@ int HL7800::doHttpPost(char *url, char *header, void *body, int bodySize, char *
     // Wind up HTTP/POST session
     closeHttpSession();    // Close session and clear _httpSessionId
 
+    h78USBDPLN("<doHttpPost(): %d", stat);
     return (stat);
 }
 
@@ -269,9 +271,7 @@ int HL7800::doHttpPost(char *url, char *header, void *body, int bodySize, char *
  *  @detail
  */
 int HL7800::splitUrl(char *url, char *host, int *port, char *path, int *useSSL) {
-#ifdef DEBUG_USB
     char *hp = host, *pp = path;
-#endif // DEBUG_USB
     int portNum;
     // Check protocol
     if (! strncmp(url, "https://", 8)) {
@@ -346,8 +346,8 @@ int HL7800::splitUrl(char *url, char *host, int *port, char *path, int *useSSL) 
  *
  *  レスポンスボディを取得・解析する
  *
- *  @param(resp)        [out] 取得したボディの格納先
- *  @param(size)        [out] 取得したボディのサイズ[Bytes]
+ *  @param(resp)        [in/out] 取得したボディの格納先
+ *  @param(size)        [in/out] 取得したボディのサイズ[Bytes]
  *  @param(contentLength) [in] レスポンスヘッダで指定されたボディサイズ[Bytes]
  *  @param(timeout)     [in] タイムアウト時間[mS]
  *  @return             0:成功時、0以外:エラー時(エラーコード)
@@ -359,7 +359,16 @@ int  HL7800::getBody(char *resp, int *size, int contentLength, uint32_t timeout)
     int  length = 0;        //
     int  readBytes;         // The number of bytes that it must retrieve from UART1 buffer
 
-//    contentLength++;       // @@@ Omajinai
+    h78USBDPLN(">getBody(-,%d,%d,%u)", *size, contentLength, timeout);
+
+    // There is HL7800's firmware bug, so return immediately when empty body
+    if (contentLength == 0) {
+        *size = 0;
+        discardResponse(100);
+        h78USBDPLN("body=>\"\",0<");
+        return (h78SUCCESS);
+    }
+
     if (contentLength < 0) {
         readBytes = *size;          // I don't know the size, so I read only the size of the buffer @@@
     }
