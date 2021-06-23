@@ -44,7 +44,7 @@ void loop() {
   mgSERIAL_MONITOR.print("uploading: ");
   mgSERIAL_MONITOR.println(t, 1);
   am.set(1, t);
-  if (am.send())
+  if (! am.send())
     mgSERIAL_MONITOR.println("send(): ok");
   else
     mgSERIAL_MONITOR.println("send(): error");
