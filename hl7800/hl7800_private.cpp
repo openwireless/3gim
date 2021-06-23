@@ -47,7 +47,7 @@ void HL7800::discardResponse(uint32_t timeout) {
  *  @return             0:成功時、0以外:エラー時
  *  @detail
  */
-int HL7800::getSessionId(uint32_t timeout, char *ind, int *sessionId) {
+int HL7800::getSessionId(uint32_t timeout, const char *ind, int *sessionId) {
   // Response patters are as follow:
   //   XXXXX_IND: <session_id>\r\n
   //   XXXXX_IND: <session_id>,..\r\n
@@ -62,8 +62,14 @@ int HL7800::getSessionId(uint32_t timeout, char *ind, int *sessionId) {
         char line[50];
         int len = sizeof(line) - 1;
         h78SERIAL.setTimeout(limit - millis());
-        if ((len = h78SERIAL.readBytesUntil('\n', line, len)) == 0)
-            break;    // Timed out
+        if ((len = h78SERIAL.readBytesUntil('\n', line, len)) == 0) {
+            // timed out or empty line
+            if (millis() > limit)
+                break;    // Timed out
+            // skip empty line
+            continue;
+        }
+
         line[len] = '\0';
         h78USBDPLN("line>>%s<<", line);
         if (len > indLength && ! strncmp(line, ind, indLength)) {
@@ -220,7 +226,7 @@ int HL7800::parseCCLK(char *resp, char *datetime) {
  *  @return             0:成功時、0以外:失敗時(エラーコード)
  *  @detail
  */
-int  HL7800::waitUntilReady(uint32_t timeout, char *prefix, int sessionId) {
+int  HL7800::waitUntilReady(uint32_t timeout, const char *prefix, int sessionId) {
     uint32_t limit = millis() + timeout;
     char ind[50];
     sprintf(ind, "%s %d,1", prefix, sessionId);
