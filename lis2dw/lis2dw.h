@@ -7,7 +7,7 @@
  *		R1.0  2021.04.30
  *
  *	Note:
- *		LIS2DW is a 14bit ADC 3-Axis MEMS Accelerometer made by STmaicro.
+ *		LIS2DW is a 14bit ADC 3-Axis MEMS Accelerometer made by STmicro.
  *
  *	Copyright(c) 2021 TABrain inc.
  */
@@ -66,7 +66,7 @@
 #define s2REG_CTRL7                 0x3f        // [R/W] Control register #7
 
 // REG_OUT_T_L
-#define s2OUT_T_L_MASK              0xf0        // Tmperature low byte mask
+#define s2OUT_T_L_MASK              0xf0        // Temperature low byte mask
 
 // REG_WHO_AM_I
 #define s2WHO_AM_I_ID               0x44        // Who am I ID
@@ -89,7 +89,7 @@
   // Mode selection
 #define s2MODE_LOW_POWER            0x00        // Mode: Low power mode(12/14-bit)
 #define s2MODE_HIGH_PERFORMANCE     0x04        // Mode: High performance mode(14-bit)
-#define s2MODE_SINGLE_ON_DEMAND     0x08        // Mode: Simgle data conversion on deman mode(12/14-bit)
+#define s2MODE_SINGLE_ON_DEMAND     0x08        // Mode: Single data conversion on demand mode(12/14-bit)
 #define s2MODE_LOW_RESERVED         0x0C        // Mode: Reserved
   // Low-power mode selection
 #define s2LP_MODE_1                 0x00        // Low-power mode: #1 (12-bit)
@@ -107,7 +107,7 @@
 #define s2CTRL2_SIM                 0x01        // SPI serial interface mode selection(0:4-wire interface/1:3-wire interface)
 
 // REG_CTRL3
-#define s2CTRL3_ST_MASKS            0xc0        // Selt-Test enable and mode(s2CTRL3_ST_*) - 00
+#define s2CTRL3_ST_MASKS            0xc0        // Self-Test enable and mode(s2CTRL3_ST_*) - 00
 #define s2CTRL3_PP_OD               0x02        // Push-pull/open-drain selection on interrupt pad(0:push-pull/1:open-drain) - 0
 #define s2CTRL3_LIR                 0x01        // Latched Interrupt(0:interrupt request not latched/1:interrupt request latched - 0
 #define s2CTRL3_H_LACTIVE           0x08        // Interrupt active high, low(0:active high/1:active low)
@@ -190,11 +190,11 @@
 #define s2INT_DUR_SHOCK_MASK        0x03        // Maximum duration of over-threshold event(1 LSB = 8 * 1/ODR) - 00(which is 4 * 1/ODR)
 
 // REG_WAKE_UP_THS(Table 71)
-#define s2WAKE_UP_THS_SINGLE_DOUBLE_TAP 0x00    // Enable single/double-tap event(0:only single-tap event is enabled/1:single and double-tap events are enabled) - 0
-#define s2WAKE_UP_THS_SLEEP_ON      0x00        // Sleep (inactivity) enable(0:sleep disabled/1:sleep enabled) - 0
+#define s2WAKE_UP_THS_SINGLE_DOUBLE_TAP 0x80    // Enable single/double-tap event(0:only single-tap event is enabled/1:single and double-tap events are enabled) - 0
+#define s2WAKE_UP_THS_SLEEP_ON      0x40        // Sleep (inactivity) enable(0:sleep disabled/1:sleep enabled) - 0
 #define s2WAKE_UP_THS_WK_THS_MASK   0x3f        // Wakeup threshold(6-bit unsigned, 1 LSB = 1/64 of FS) - 000000
 
-// REG_WAKE_UP_DUR(Table #define s2WAKE_UP_DUR_
+// REG_WAKE_UP_DUR(Table 73)
 #define s2WAKE_UP_DUR_FF_DUR5       0x80        // Free-fall duration. In conjunction with FF_DUR [4:0] bit(1 LSB = 1 * 1/ODR) - 0
 #define s2WAKE_UP_DUR_WAKE_DUR_MASK 0x60        // Wakeup duration.(1 LSB = 1 * 1/ODR) - 00
 #define s2WAKE_UP_DUR_STATIONARY    0x10        // Enable stationary detection / motion detection with no automatic ODR change when detecting stationary state(0:disable/1:enable) - 0
@@ -243,8 +243,8 @@
 // ALL_INT_SRC(Table 86)
 #define s2INT_SRC_SLEEP_CHANGE_IA   0x20        // Sleep change status(0:Sleep change not detected/1:Sleep change detected) - 0
 #define s2INT_SRC_6D_IA             0x10        // Source of change in position portrait/landscape/face-up/face-down(0:no event detected/1:a change in position detected) - 0
-#define s2INT_SRC_DOIUBLE_TAP       0x08        // Double-tap event status(0:double-tap event not detected/1:double-tap event detected) - 0
-#define s2INT_SRC_SIMGLE_TAP        0x04        // Single-tap event status(0:single-tap event not detected/1:single-tap event detected) - 0
+#define s2INT_SRC_DOUBLE_TAP        0x08        // Double-tap event status(0:double-tap event not detected/1:double-tap event detected) - 0
+#define s2INT_SRC_SINGLE_TAP        0x04        // Single-tap event status(0:single-tap event not detected/1:single-tap event detected) - 0
 #define s2INT_SRC_WU_IA             0x02        // Wakeup event detection status(0:wakeup event not detected/1:wakeup event detected) - 0
 #define s2INT_SRC_FF_IA             0x01        // Free-fall event detection status(0:free-fall event not detected/1:free-fall event detected) - 0
 
@@ -275,7 +275,7 @@ class LIS2DW {
 	int toRaw(uint8_t high, uint8_t low) __attribute__((always_inline)) {
 		int8_t signedHigh = high;
 		return ((((int)signedHigh << 8) + low) >> 2);
-	}                                               // Convert to 14-bit accelaration
+	}                                               // Convert to 14-bit acceleration
     int tomg(int raw, int range) __attribute__((always_inline)) {
 		switch (range) {
           case s2FS_2G:
