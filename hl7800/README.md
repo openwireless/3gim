@@ -37,5 +37,5 @@ TCP通信とUDP通信は、同時に利用することができます。
   * TCP関数の一部(connectTCP,disconnectTCP,writeTCP)、UDP関数の一部(sendUDP)、HTTP関数(doHttpGet,doHttpPost)は、同期型の関数です。
   * GNSS機能には対応していません。今後のリリースで対応していく予定です。
   * R5から、HTTPSに対応しました（ただしすべてのHTTPSサーバとの接続を保証するものではありません）。使い方は、サンプルスケッチhttps_get等を参照ください。
-  * ATSAMD21～HL7800間のUART通信で、ハードウェアフロー制御を利用できます。詳しくは[MGIM(V4.1)で、ハードウェアフロー制御を使用する手順](docs/hw_flowctrl.md)を参照くださいを参照ください。
+  * ATSAMD21～HL7800間のUART通信で、ハードウェアフロー制御を利用できます。詳しくは[MGIM(V4.1)で、ハードウェアフロー制御を使用する手順](https://github.com/openwireless/docs/blob/master/mgim/docs/hw_flowctrl.md)を参照くださいを参照ください。
 ---
