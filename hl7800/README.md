@@ -32,7 +32,7 @@ TCP通信とUDP通信は、同時に利用することができます。
   * ボードマネージャで、"Arduino SAMD Boards(32-bits ARM Cortex-M0+) Ver1.8.11以降"をインストールして使用してください。
   * クラスライブラリHL7800の使い方は、サンプルスケッチをご参照ください。
   * Arduino CoreにあるRingBuffer.hで、シンボルSERIAL_BUFFER_SIZEを256または512に拡大することを推奨します。詳しくは、 [HL7800ライブラリを利用するにあたっての補足](https://github.com/openwireless/docs/blob/master/mgim/docs/hl7800_notes.md) を参照してください。
-  * HTTPS/GETおよびHTTPS/POSTの実行に必要なルート証明書を取得する方法は、[ルート証明書の取得方法について](how_to_get_rootca.md) を参照してください。
+  * HTTPS/GETおよびHTTPS/POSTの実行に必要なルート証明書を取得する方法は、[ルート証明書の取得方法について](https://github.com/openwireless/3gim/blob/master/hl7800/doc/how_to_get_rootca.md) を参照してください。
 
 ## 制約事項・留意事項
   * TCP関数の一部(connectTCP,disconnectTCP,writeTCP)、UDP関数の一部(sendUDP)、HTTP関数(doHttpGet,doHttpPost)は、同期型の関数です。
