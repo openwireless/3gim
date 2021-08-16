@@ -8,8 +8,9 @@
  *  R2  2020/10/11 (A.D)
  *  R2a 2020/11/14 (A.D)
  *  R3  2021/06/21 (A.D) fix getBody() when empty body
+ *  R5  2021/08/16 (A.D) add setRootCA() and getLastHttpStatusCode(), so we support "https:" from now on.
  *
- *  Copyright(c) 2020 TABrain Inc. All rights reserved.
+ *  Copyright(c) 2020-2021 TABrain Inc. All rights reserved.
  */
 
 #include "hl7800.h"
@@ -64,9 +65,6 @@ int  HL7800::doHttpGet(char *url, char *header, char *response, int *nbytes) {
         if (waitUntilCONNECT(h78TIMEOUT_GET) == 0) {
             int headerSize = strlen(header);
             h78SEND((uint8_t *)header, headerSize);
-//            char lastChar = header[headerSize-1];
-//            if (lastChar != '\n' && lastChar != '\r')
-//                h78SENDF("\r\n");    // supplement a newline at the end
             delay(200);
             h78SENDF(h78END_PATTERN);
             int len = *nbytes - 1;
@@ -99,6 +97,7 @@ int  HL7800::doHttpGet(char *url, char *header, char *response, int *nbytes) {
             stat = h78ERR_HTTP_HEADER_RES;
             goto WindUp;
         }
+        _lastHttpStatusCode = httpStatusCode;
         // Get response body
         int len = *nbytes;    // set buffer size
         if ((stat = getBody(response, &len, contentLength, h78TIMEOUT_BODY)) != h78SUCCESS) {
@@ -208,8 +207,20 @@ int HL7800::doHttpPost(char *url, char *header, void *body, int bodySize, char *
     h78SENDFLN("AT+KHTTPPOST=%d,,\"%s\"", _httpSessionId, path);
 
     if (waitUntilCONNECT(h78TIMEOUT_POST) == 0) {
-        // Send body
+#if defined(_USE_HW_FLOW_CONTROL_)
+        // Send body at a once
         h78SEND((uint8_t *)body, bodySize);
+#else
+        // Send chunkSize bytes at a time to prevent the UART from overflowing
+        const int chunkSize = 2048;
+        while (bodySize > 0) {
+            int bytes = (chunkSize > bodySize) ? bodySize : chunkSize;
+            h78SEND((uint8_t *)body, bytes);
+            body += bytes;
+            bodySize -= bytes;
+            delay(200);
+        }
+#endif
         h78SENDF(h78END_PATTERN);
         // Get response header
         int httpStatusCode, contentLength;
@@ -246,6 +257,46 @@ int HL7800::doHttpPost(char *url, char *header, void *body, int bodySize, char *
 
     h78USBDPLN("<doHttpPost(): %d", stat);
     return (stat);
+}
+
+/**
+ *  @fn     seRootCA
+ *
+ *  RootCA証明書を登録する
+ *
+ *  @param(rootCA)      [in] 登録するRooTCA証明書の文字列
+ *  @return             0:成功時、0～:エラー時(エラーコード)
+ *  @detail             doHttpGet()/doHttpPost()でhttpsを使用する証明書を登録する
+ *
+ */
+int HL7800::setRootCA(char *rootCA) {
+    if (! rootCA)
+        return (h78ERR_HTTP_BAD_CA);  // root CA is null
+    int length = strlen(rootCA);
+    if (length > 4096)
+        return (h78ERR_HTTP_BAD_CA);  // too long CA
+
+    // Send KCERTSTORE command with root CA
+    int stat = 1;
+    h78SENDFLN("AT+KCERTSTORE=0,%d", length);
+    if (waitUntilCONNECT(h78TIMEOUT_LOCAL) == 0) {
+        h78SEND((uint8_t *)rootCA, length);
+        delay(100);
+        char response[30];
+        int len = sizeof(response) - 1;
+        if ((stat = getResponse(h78TIMEOUT_LOCAL, response, &len)) != 0) {
+            response[len] = '\0';
+            h78USBDPLN("+>KCERTSTORE NG: %s", response);
+            return (h78ERR_HTTP_ERR_CA);
+        }
+    }
+    else {
+        h78USBDPLN("+>KCERTSTORE CONNECT NG");
+        return (h78ERR_HTTP_ERR_CA);
+    }
+    h78USBDPLN("+>KCERTSTORE OK");
+
+    return (h78SUCCESS);
 }
 
 /**

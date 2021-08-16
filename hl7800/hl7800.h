@@ -7,8 +7,11 @@
  *  R1  2020/08/03 (A.D)
  *  R2  2020/10/11 (A.D)
  *  R3  2021/05/05 (A.D) change for mgim(V4.1)
+ *  R4  2021/06/23 (A.D) bug fix
+ *  R5  2021/08/16 (A.D) add setRootCA() and getLastHttpStatusCode(), so we support "https:" from now on.
+ *                       change begin() add parameter "reset"
  *
- *  Copyright(c) 2020 TABrain Inc. All rights reserved.
+ *  Copyright(c) 2020-2021 TABrain Inc. All rights reserved.
  */
 
 #ifndef _hl7800_h_
@@ -20,6 +23,7 @@
 //-- DEBUG CONFIGURATION --
 //#define DUMMY_TEST
 //#define DEBUG_USB                             // When this symbol is defined, you can debug by connecting a PC to USB
+#define _USE_HW_FLOW_CONTROL_                   // Use hardware flow control(RTS/CTS) if defined
 
 // Symbols
 #define h78SERIAL                   Serial      // Serial port with HL7800
@@ -31,7 +35,8 @@
 #define h78TIMEOUT_CGATT            60000       // Timeout of AT+CGATT command
 #define h78TIMEOUT_GET              30000       // Timeout of http/get response[mS] - because of overhead to discard a long response
 #define h78TIMEOUT_POST             30000       // Timeout of http/post response[mS]
-#define h78TIMEOUT_BODY             30000       // Timeout of reading response body fully [mS]
+//@original #define h78TIMEOUT_BODY             30000       // Timeout of reading response body fully [mS]
+#define h78TIMEOUT_BODY             60000       // Timeout of reading response body fully [mS]
 #define h78TIMEOUT_HEADER           30000       // Timeout of reading response header fully [mS]
 #define h78TIMEOUT_HTTP_READY       10000       // Timeout of http/https ready [mS]
 #define h78TIMEOUT_CONNECT          60000       // Timeout of tcp connect [mS]
@@ -46,7 +51,8 @@
 #define h78MAX_TCP_DATA_SIZE_ONCE   32000       // Maximum data size that can be sent at one time via TCP
 #define h78UNKNOWN_BODY_SIZE        (384*1024)  // Assume less than 384KB
 #define h78MAX_RESULT_LENGTH        1088        // Actual maximum command result length, include '\n' (in byets)
-#define h78MAX_RESPONSE_LENGTH      1023        // Maximum http/get or http/post response length (in byets) - compatible with v1
+#define h78MAX_RESPONSE_LENGTH      8192        // Maximum http/get or http/post response length (in byets) - compatible with v1
+//@original #define h78MAX_RESPONSE_LENGTH      1023        // Maximum http/get or http/post response length (in byets) - compatible with v1
 #define h78MAX_HOST_LENGTH          200         // Maximum length of host name with domain
 #define h78MAX_PATH_SIZE            200         // Maxmimum path length of GET or POST
 #define h78MAX_TCP_WRITE_SIZE       4096        // Maximum data size(in bytes) to write at once
@@ -81,6 +87,8 @@
 #define h78ERR_HTTP_BODY_RES        711         // doHttpGet()/doHttpPost() - レスポンスボディの取得・解析でエラーが発生した
 #define h78ERR_HTTP_GET             712         // doHttpGet()/doHttpPost() - GETの実行でエラーが発生した
 #define h78ERR_HTTP_POST            720         // doHttpPost() - レスポンスヘッダの取得・解析でエラーが発生した
+#define h78ERR_HTTP_BAD_CA          750         // setRootCA() - 指定された証明書がおかしい
+#define h78ERR_HTTP_ERR_CA          751         // setRootCA() - 指定された証明書の登録に失敗した
   // udp function errors
 #define h78ERR_UDP_CONFIG           801         // beginUDP() -
 #define h78ERR_UDP_TOO_BIG_DATA     802         // sendUDP() -
@@ -158,7 +166,7 @@ class HL7800 {
     }
 
     // Begin/end
-    int begin(void);
+    int begin(boolean reset = false);   // @change R4
     int end(void);
 
     // System Control
@@ -201,6 +209,10 @@ class HL7800 {
     }
 
     // HTTP/HTTPS functions
+    int setRootCA(char *rootCA);        // @add R5
+    int getLastHttpStatusCode(void) {   // @add R5
+        return (_lastHttpStatusCode);
+    }
     int doHttpGet(char *url, char *header, char *response, int *responseSize);
     int doHttpPost(char *url, char *header, void *body, int bodySize, char *response, int *responseSize);
     // int requestHttpPost(char *url, char *header, char *body, CALLBACK_FUNC handleResponse);
@@ -233,13 +245,15 @@ class HL7800 {
     int _udpSessionId;
     int _tcpSessionId;
     int _httpSessionId;
+      // Last http status code
+    int _lastHttpStatusCode;
       // time out values
     int _timeoutTcpConnect;
     int _timeoutTcpWrite;
      // HL7800 control pins
     int _powerPin, _powerOnPin, _resetPin, _wakeUpPin, _vgpioPin;
     const int _RTS = 24;        // [out] RTS (Active:LOW)
-    const int _CTS = 24;        // [in] CTS
+    const int _CTS = 23;        // [in] CTS
 };
 
 #endif // _hl7800_h_

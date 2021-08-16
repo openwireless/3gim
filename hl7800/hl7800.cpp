@@ -7,6 +7,7 @@
  *  R1  2020/06/21 (A.D)
  *  R1a 2020/11/19 (A.D) h78SERIAL.flush()を各関数の出口で呼び出すよう修正
  *  R3  2021/04/18 (A.D) change for mgim(V4.1)
+ *  R4  2021/08/03 (A.D) change begin() add parameter "reset"
  *
  *  Copyright(c) 2020 TABrain Inc. All rights reserved.
  */
@@ -29,7 +30,7 @@
  *  @return             0:成功時、0以外:エラー時
  *  @detail             HL7800の起動のため、BOOTING_TIME時間だけ待つ
  */
-int HL7800::begin(void) {
+int HL7800::begin(boolean reset) {
 #ifdef DUMMY_TEST
     _initialized = true;
     return (h78SUCCESS)
@@ -53,8 +54,11 @@ int HL7800::begin(void) {
     // 初期化のためのATコマンドを送る
     h78SENDFLN("ATZ");                              // 1回目のATコマンドの実行は失敗するので、当たり障りのないコマンドを実行しておく
     discardResponse(h78WAITTIME_LOCAL);
-    h78SENDFLN("AT+CFUN=1,1");                      // set phone FULL functionality and reset
-    discardResponse(h78WAITTIME_LOCAL);
+    if (reset) {
+        h78SENDFLN("AT+CFUN=1,1");                      // set phone FULL functionality and reset
+        discardResponse(h78WAITTIME_LOCAL);
+        delay(BOOTING_TIME);
+    }
     h78SENDFLN("ATE1");                             // Echo back on
     discardResponse(h78WAITTIME_LOCAL);
     h78SENDFLN("AT+KSLEEP=2");                      // Don't sleep

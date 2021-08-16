@@ -56,9 +56,13 @@ void setup() {
     mgSERIAL_MONITOR.println(stat);
   }
   else {
-    mgSERIAL_MONITOR.print("body=\"");
-    mgSERIAL_MONITOR.write(resp, respSize);
-    mgSERIAL_MONITOR.println("\"");
+      mgSERIAL_MONITOR.print("http status=");
+      mgSERIAL_MONITOR.println(hl7800.getLastHttpStatusCode());
+      mgSERIAL_MONITOR.print("body=");
+      mgSERIAL_MONITOR.print(respSize, DEC);
+      mgSERIAL_MONITOR.print(",\"");
+      mgSERIAL_MONITOR.write(resp, respSize);
+      mgSERIAL_MONITOR.println("\"");
   }
 
   // hl7800の電源Offと終了

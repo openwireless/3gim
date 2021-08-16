@@ -14,7 +14,7 @@
         "type": "git",
         "url": "https://github.com/openwireless/3gim/tree/master/hl7800"
     },
-    "version": "0.3.0",
+    "version": "0.5.0",
     "frameworks": "arduino",
     "platforms": "atmelsam"
 }
