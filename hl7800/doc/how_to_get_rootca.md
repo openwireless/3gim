@@ -27,7 +27,7 @@ HTTPS/GETあるいはHTTPS/POSTを使用する場合は、予め接続先のサ�
 
 (4) 取得したルート証明書をメモ帳で開くと、このような内容となっている。
 
-<img src="png/rootca_11.png" width="800">
+<img src="png/rootca_11.png" width="600">
 
 上記の操作で取得したルート証明書の内容を、サンプルスケッチhttps_getにあるようにスケッチ中に埋め込みます。
 
