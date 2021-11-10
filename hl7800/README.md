@@ -8,6 +8,7 @@
     * begin()にresetパラメータ(省略時はfalse)を追加（trueを指定すると、"AT+CFUN=1,1"を実行して15秒程度余分に待つ）
     * ルート証明書を設定するsetRootCA()メソッドを追加
     * 最後のHTTP/GETまたはPOSTのレスポンスのHTTPステータスコードを取得するgetLastHttpStatusCode()メソッドを追加
+  * R6  2021/10/XX  タイムアウト値を一部見直し
 
 ## 概要
 本ライブラリは、TABrainが製造・販売するLTE-Mモジュール(HL7800M)内蔵の小型マイコンMGIM用のライブラリです。
@@ -38,5 +39,5 @@ TCP通信とUDP通信は、同時に利用することができます。
   * TCP関数の一部(connectTCP,disconnectTCP,writeTCP)、UDP関数の一部(sendUDP)、HTTP関数(doHttpGet,doHttpPost)は、同期型の関数です。
   * GNSS機能には対応していません。
   * R5から、HTTPSに対応しました（ただしすべてのHTTPSサーバとの接続を保証するものではありません）。使い方は、サンプルスケッチhttps_get等を参照ください。
-  * ATSAMD21～HL7800間のUART通信で、ハードウェアフロー制御を利用できます。詳しくは[MGIM(V4.1)で、ハードウェアフロー制御を使用する手順](https://github.com/openwireless/docs/blob/master/mgim/docs/hw_flowctrl.md)を参照くださいを参照ください。
+  * ATSAMD21～HL7800間のUART通信で、ハードウェアフロー制御を利用できます。詳しくは[MGIM(V4.1)で、ハードウェアフロー制御を使用する手順](https://github.com/openwireless/docs/blob/master/mgim/docs/hw_flowctrl.md)を参照ください。
 ---
